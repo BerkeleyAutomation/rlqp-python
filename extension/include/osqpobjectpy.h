@@ -1365,6 +1365,140 @@ static PyMethodDef OSQP_methods[] = {
     {NULL, NULL}		/* sentinel */
 };
 
+static PyObject * OSQP_get_x(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp n = (npy_intp)self->workspace->data->n;
+    PyObject *x = (PyObject *)PyArrayFromCArray(self->workspace->x, &n);
+    return x;
+}
+
+static PyObject * OSQP_get_y(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *y = (PyObject *)PyArrayFromCArray(self->workspace->y, &m);
+    return y;
+}
+
+static PyObject * OSQP_get_z(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *z = (PyObject *)PyArrayFromCArray(self->workspace->z, &m);
+    return z;
+}
+
+static PyObject * OSQP_get_z_tilde(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    c_int n = self->workspace->data->n;
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *z = (PyObject *)PyArrayFromCArray(self->workspace->xz_tilde + n, &m);
+    return z;
+}
+
+static PyObject * OSQP_get_Ax(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *z = (PyObject *)PyArrayFromCArray(self->workspace->Ax, &m);
+    return z;
+}
+
+static PyObject * OSQP_get_lower_bound(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *l = (PyObject *)PyArrayFromCArray(self->workspace->data->l, &m);
+    return l;
+}
+
+static PyObject * OSQP_get_upper_bound(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *u = (PyObject *)PyArrayFromCArray(self->workspace->data->u, &m);
+    return u;
+}
+
+static PyObject * OSQP_get_rho_vec(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *rho_vec = (PyObject *)PyArrayFromCArray(self->workspace->rho_vec, &m);
+    return rho_vec;
+}
+
+static long pyarray_vector_size(PyArrayObject* obj) {
+    int ndim = PyArray_NDIM(obj);
+    if (ndim == 1)
+        return PyArray_DIM(obj, 0);
+    if (ndim != 2)
+        return -1;
+    if (PyArray_DIM(obj, 0) == 1)
+        return PyArray_DIM(obj, 1);
+    if (PyArray_DIM(obj, 1) == 1)
+        return PyArray_DIM(obj, 0);
+    return -1;
+}
+
+static int OSQP_set_rho_vec(OSQP *self, PyObject *value, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return -1;
+    }
+
+    if (!PyArray_Check(value)) {
+        PyErr_SetString(PyExc_ValueError, "rho vec must be a numpy array");
+        return -1;
+    }
+
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    int float_type = get_float_type();
+    PyArrayObject *v_cont = get_contiguous((PyArrayObject*)value, float_type);
+    int result;
+    if (pyarray_vector_size(v_cont) != m) {
+        PyErr_SetString(PyExc_ValueError, "rho vec size mismatch");
+        result = -1;
+    } else {
+        c_float *v_arr = (c_float*)PyArray_DATA(v_cont);
+        osqp_update_rho_vec(self->workspace, v_arr);
+        result = 0;
+    }
+    
+    Py_DECREF(v_cont);
+    return result;
+}
+
+static PyGetSetDef RLQP_getset[] = {
+    { "lower_bound", (getter)OSQP_get_lower_bound, NULL, PyDoc_STR("Get the lower bound"), NULL },
+    { "upper_bound", (getter)OSQP_get_upper_bound, NULL, PyDoc_STR("Get the upper bound"), NULL },
+    { "x", (getter)OSQP_get_x, NULL, PyDoc_STR("Get the current value of x"), NULL },
+    { "y", (getter)OSQP_get_y, NULL, PyDoc_STR("Get the current value of y"), NULL },
+    { "z", (getter)OSQP_get_z, NULL, PyDoc_STR("Get the current value of z"), NULL },
+    { "z_tilde", (getter)OSQP_get_z_tilde, NULL, PyDoc_STR("Get the current value of z_tilde"), NULL },
+    { "Ax", (getter)OSQP_get_Ax, NULL, PyDoc_STR("Get the current value of Ax"), NULL },
+    { "rho_vec", (getter)OSQP_get_rho_vec, (setter)OSQP_set_rho_vec, PyDoc_STR("Access to the internal rho vector"), NULL },
+    { NULL } /* sentinel */
+};
+
 
 // Define workspace type object
 static PyTypeObject OSQP_Type = {
@@ -1397,7 +1531,7 @@ static PyTypeObject OSQP_Type = {
     0,		                            /* tp_iternext */
     OSQP_methods,                       /* tp_methods */
     0,                                  /* tp_members */
-    0,                                  /* tp_getset */
+    RLQP_getset,                        /* tp_getset */
     0,                                  /* tp_base */
     0,                                  /* tp_dict */
     0,                                  /* tp_descr_get */
