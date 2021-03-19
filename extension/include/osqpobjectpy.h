@@ -1369,7 +1369,7 @@ static PyMethodDef OSQP_methods[] = {
 // Define workspace type object
 static PyTypeObject OSQP_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "osqp.OSQP",                        /*tp_name*/
+    "rlqp.RLQP",                        /*tp_name*/
     sizeof(OSQP),                       /*tp_basicsize*/
     0,                                  /*tp_itemsize*/
     (destructor)OSQP_dealloc,           /*tp_dealloc*/

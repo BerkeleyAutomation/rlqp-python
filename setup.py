@@ -14,10 +14,10 @@ import argparse
 
 OSQP_ARG_MARK = '--osqp'
 
-parser = argparse.ArgumentParser(description='OSQP Setup script arguments.')
+parser = argparse.ArgumentParser(description='RLQP Setup script arguments.')
 parser.add_argument(
     OSQP_ARG_MARK,
-    dest='osqp',
+    dest='rlqp',
     action='store_true',
     default=False,
     help='Put this first to ensure following arguments are parsed correctly')
@@ -35,7 +35,7 @@ parser.add_argument(
     help='Compile extension in debug mode')
 args, unknown = parser.parse_known_args()
 
-# necessary to remove OSQP args before passing to setup:
+# necessary to remove RLQP args before passing to setup:
 if OSQP_ARG_MARK in sys.argv:
     sys.argv = sys.argv[0:sys.argv.index(OSQP_ARG_MARK)]
 
@@ -52,12 +52,12 @@ if system() == 'Windows':
     if sys.maxsize // 2 ** 32 > 0:
         cmake_args[-1] += ' Win64'
     cmake_build_flags += ['--config', 'Release']
-    lib_name = 'osqp.lib'
+    lib_name = 'rlqp.lib'
     lib_subdir = ['Release']
 
 else:  # Linux or Mac
     cmake_args += ['-G', 'Unix Makefiles']
-    lib_name = 'libosqp.a'
+    lib_name = 'librlqp.a'
 
 # Pass Python option to CMake and Python interface compilation
 cmake_args += ['-DPYTHON=ON']
@@ -71,7 +71,7 @@ if not args.long:
           " - https://github.com/numpy/numpy/issues/5906\n" +
           " - https://github.com/ContinuumIO/anaconda-issues/issues/3823\n" +
           "You can reenable long integers by passing: "
-          "--osqp --long argument.\n")
+          "--rlqp --long argument.\n")
     cmake_args += ['-DDLONG=OFF']
 
 # Pass python to compiler launched from setup.py
@@ -81,7 +81,7 @@ define_macros += [('PYTHON', None)]
 cmake_args += ['-DPYTHON_INCLUDE_DIRS=%s' % sysconfig.get_python_inc()]
 
 
-# Define osqp and qdldl directories
+# Define rlqp and qdldl directories
 current_dir = os.getcwd()
 osqp_dir = os.path.join('osqp_sources')
 osqp_build_dir = os.path.join(osqp_dir, 'build')
@@ -131,7 +131,7 @@ if system() == 'Windows':
     # We need to include this to fix the dependency
     libraries += ['legacy_stdio_definitions']
 
-# Add OSQP compiled library
+# Add RLQP compiled library
 extra_objects = [os.path.join('extension', 'src', lib_name)]
 
 '''
@@ -144,7 +144,7 @@ if os.path.exists(osqp_codegen_sources_dir):
     sh.rmtree(osqp_codegen_sources_dir)
 os.makedirs(osqp_codegen_sources_dir)
 
-# OSQP C files
+# RLQP C files
 cfiles = [os.path.join(osqp_dir, 'src', f)
           for f in os.listdir(os.path.join(osqp_dir, 'src'))
           if f.endswith('.c') and f not in ('cs.c', 'ctrlc.c', 'polish.c',
@@ -155,14 +155,14 @@ cfiles += [os.path.join(qdldl_dir, f)
 cfiles += [os.path.join(qdldl_dir, 'qdldl_sources', 'src', f)
            for f in os.listdir(os.path.join(qdldl_dir, 'qdldl_sources',
                                             'src'))]
-osqp_codegen_sources_c_dir = os.path.join(osqp_codegen_sources_dir, 'src')
-if os.path.exists(osqp_codegen_sources_c_dir):  # Create destination directory
-    sh.rmtree(osqp_codegen_sources_c_dir)
-os.makedirs(osqp_codegen_sources_c_dir)
+rlqp_codegen_sources_c_dir = os.path.join(osqp_codegen_sources_dir, 'src')
+if os.path.exists(rlqp_codegen_sources_c_dir):  # Create destination directory
+    sh.rmtree(rlqp_codegen_sources_c_dir)
+os.makedirs(rlqp_codegen_sources_c_dir)
 for f in cfiles:  # Copy C files
-    copy(f, osqp_codegen_sources_c_dir)
+    copy(f, rlqp_codegen_sources_c_dir)
 
-# List with OSQP H files
+# List with RLQP H files
 hfiles = [os.path.join(osqp_dir, 'include', f)
           for f in os.listdir(os.path.join(osqp_dir, 'include'))
           if f.endswith('.h') and f not in ('qdldl_types.h',
@@ -176,35 +176,35 @@ hfiles += [os.path.join(qdldl_dir, 'qdldl_sources', 'include', f)
            for f in os.listdir(os.path.join(qdldl_dir, 'qdldl_sources',
                                             'include'))
            if f.endswith('.h')]
-osqp_codegen_sources_h_dir = os.path.join(osqp_codegen_sources_dir, 'include')
-if os.path.exists(osqp_codegen_sources_h_dir):  # Create destination directory
-    sh.rmtree(osqp_codegen_sources_h_dir)
-os.makedirs(osqp_codegen_sources_h_dir)
+rlqp_codegen_sources_h_dir = os.path.join(osqp_codegen_sources_dir, 'include')
+if os.path.exists(rlqp_codegen_sources_h_dir):  # Create destination directory
+    sh.rmtree(rlqp_codegen_sources_h_dir)
+os.makedirs(rlqp_codegen_sources_h_dir)
 for f in hfiles:  # Copy header files
-    copy(f, osqp_codegen_sources_h_dir)
+    copy(f, rlqp_codegen_sources_h_dir)
 
-# List with OSQP configure files
+# List with RLQP configure files
 configure_files = [os.path.join(osqp_dir, 'configure', 'osqp_configure.h.in'),
                    os.path.join(qdldl_dir, 'qdldl_sources', 'configure',
                                 'qdldl_types.h.in')]
-osqp_codegen_sources_configure_dir = os.path.join(osqp_codegen_sources_dir,
+rlqp_codegen_sources_configure_dir = os.path.join(osqp_codegen_sources_dir,
                                                   'configure')
-if os.path.exists(osqp_codegen_sources_configure_dir):
-    sh.rmtree(osqp_codegen_sources_configure_dir)
-os.makedirs(osqp_codegen_sources_configure_dir)
+if os.path.exists(rlqp_codegen_sources_configure_dir):
+    sh.rmtree(rlqp_codegen_sources_configure_dir)
+os.makedirs(rlqp_codegen_sources_configure_dir)
 for f in configure_files:  # Copy configure files
-    copy(f, osqp_codegen_sources_configure_dir)
+    copy(f, rlqp_codegen_sources_configure_dir)
 
 # Copy cmake files
 copy(os.path.join(osqp_dir, 'src',     'CMakeLists.txt'),
-     osqp_codegen_sources_c_dir)
+     rlqp_codegen_sources_c_dir)
 copy(os.path.join(osqp_dir, 'include', 'CMakeLists.txt'),
-     osqp_codegen_sources_h_dir)
+     rlqp_codegen_sources_h_dir)
 
 
-class build_ext_osqp(build_ext):
+class build_ext_rlqp(build_ext):
     def build_extensions(self):
-        # Compile OSQP using CMake
+        # Compile RLQP using CMake
 
         # Create build directory
         if os.path.exists(osqp_build_dir):
@@ -215,11 +215,11 @@ class build_ext_osqp(build_ext):
         try:
             check_output(['cmake', '--version'])
         except OSError:
-            raise RuntimeError("CMake must be installed to build OSQP")
+            raise RuntimeError("CMake must be installed to build RLQP")
 
         # Compile static library with CMake
         call(['cmake'] + cmake_args + ['..'])
-        call(['cmake', '--build', '.', '--target', 'osqpstatic'] +
+        call(['cmake', '--build', '.', '--target', 'rlqpstatic'] +
              cmake_build_flags)
 
         # Change directory back to the python interface
@@ -234,7 +234,7 @@ class build_ext_osqp(build_ext):
         build_ext.build_extensions(self)
 
 
-_osqp = Extension('osqp._osqp',
+_rlqp = Extension('rlqp._rlqp',
                   define_macros=define_macros,
                   libraries=libraries,
                   library_dirs=library_dirs,
@@ -243,10 +243,10 @@ _osqp = Extension('osqp._osqp',
                   sources=sources_files,
                   extra_compile_args=compile_args)
 
-packages = ['osqp',
-            'osqp.codegen',
-            'osqp.tests',
-            'osqppurepy']
+packages = ['rlqp',
+            'rlqp.codegen',
+            'rlqp.tests',
+            'rlqppurepy']
 
 
 # Read README.rst file
@@ -258,19 +258,19 @@ def readme():
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
-setup(name='osqp',
+setup(name='rlqp',
       version='0.6.2.post0',
       author='Bartolomeo Stellato, Goran Banjac',
       author_email='bartolomeo.stellato@gmail.com',
-      description='OSQP: The Operator Splitting QP Solver',
+      description='RLQP: The Operator Splitting QP Solver',
       long_description=readme(),
-      package_dir={'osqp': 'module',
-                   'osqppurepy': 'modulepurepy'},
+      package_dir={'rlqp': 'module',
+                   'rlqppurepy': 'modulepurepy'},
       include_package_data=True,  # Include package data from MANIFEST.in
       setup_requires=["numpy >= 1.7", "qdldl"],
       install_requires=requirements,
       license='Apache 2.0',
-      url="https://osqp.org/",
-      cmdclass={'build_ext': build_ext_osqp},
+      url="https://rlqp.org/",
+      cmdclass={'build_ext': build_ext_rlqp},
       packages=packages,
-      ext_modules=[_osqp])
+      ext_modules=[_rlqp])

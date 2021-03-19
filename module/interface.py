@@ -3,20 +3,20 @@ Python interface module for OSQP solver v0.6.2.post0
 """
 from __future__ import print_function
 from builtins import object
-import osqp._osqp as _osqp  # Internal low level module
+import rlqp._rlqp as _osqp  # Internal low level module
 import numpy as np
 import scipy.sparse as spa
 from warnings import warn
 from platform import system
-import osqp.codegen as cg
-import osqp.utils as utils
+import rlqp.codegen as cg
+import rlqp.utils as utils
 import sys
 import qdldl
 
 
-class OSQP(object):
+class RLQP(object):
     def __init__(self):
-        self._model = _osqp.OSQP()
+        self._model = _osqp.RLQP()
 
     def version(self):
         return self._model.version()
