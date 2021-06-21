@@ -1,4 +1,4 @@
-[submodule "osqp_sources"]
+[submodule "rlqp_sources"]
 	path = rlqp_sources
 	url = git@github.com:BerkeleyAutomation/rlqp_solver.git
 	branch = rlqp
