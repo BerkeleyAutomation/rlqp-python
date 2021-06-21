@@ -1,3 +1,4 @@
 [submodule "osqp_sources"]
-	path = osqp_sources
-	url = https://github.com/oxfordcontrol/osqp
+	path = rlqp_sources
+	url = git@github.com:BerkeleyAutomation/rlqp_solver.git
+	branch = rlqp

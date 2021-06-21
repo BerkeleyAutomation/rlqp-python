@@ -120,6 +120,9 @@ if args.debug:
     print("Debug mode")
     compile_args += ["-g"]
     cmake_args += ["-DCMAKE_BUILD_TYPE=Debug"]
+else:
+    print("Release mode")
+    cmake_args += ["-DCMAKE_BUILD_TYPE=Release"]
 
 # External libraries
 library_dirs = []
