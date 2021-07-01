@@ -1,5 +1,5 @@
 """
-OSQP Solver pure python implementation: low level module
+RLQP Solver pure python implementation: low level module
 """
 from __future__ import print_function
 from builtins import range
@@ -48,7 +48,7 @@ MAX_SCALING = 1e+04
 
 class workspace(object):
     """
-    OSQP solver workspace
+    RLQP solver workspace
 
     Attributes
     ----------
@@ -122,7 +122,7 @@ class problem(object):
 
 class settings(object):
     """
-    OSQP solver settings
+    RLQP solver settings
 
     Attributes
     ----------
@@ -323,8 +323,8 @@ class results(object):
         self.linesearch = linesearch
 
 
-class OSQP(object):
-    """OSQP solver lower level interface
+class RLQP(object):
+    """RLQP solver lower level interface
     Attributes
     ----------
     work    - workspace
@@ -551,7 +551,7 @@ class OSQP(object):
         """Print solver header
         """
         print("--------------------------------------------------------------")
-        print("         OSQP v%s  -  Operator Splitting QP Solver" %
+        print("         RLQP v%s  -  Operator Splitting QP Solver" %
               self.version)
         print("                 Pure Python Implementation")
         print("        (c) Bartolomeo Stellato, Goran Banjac")
@@ -1188,7 +1188,7 @@ class OSQP(object):
 
     def solve(self):
         """
-        Solve QP problem using OSQP
+        Solve QP problem using RLQP
         """
         # Start timer
         self.work.timer = time.time()

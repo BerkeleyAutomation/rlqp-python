@@ -1,6 +1,6 @@
-# Test osqp python module
-import osqp
-# import osqppurepy as osqp
+# Test rlqp python module
+import rlqp
+# import rlqppurepy as rlqp
 import numpy as np
 from scipy import sparse
 
@@ -31,20 +31,20 @@ class codegen_matrices_tests(unittest.TestCase):
                      'alpha': 1.6,
                      'max_iter': 3000,
                      'warm_start': True}
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 
     def test_solve(self):
         # Generate the code
-        self.model.codegen('code2', python_ext_name='mat_emosqp',
+        self.model.codegen('code2', python_ext_name='mat_emrlqp',
                            force_rewrite=True, parameters='matrices')
 
         sh.rmtree('code2')
-        import mat_emosqp
+        import mat_emrlqp
 
         # Solve problem
-        x, y, _, _, _ = mat_emosqp.solve()
+        x, y, _, _, _ = mat_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x, np.array([0., 5.]), decimal=5)
@@ -52,15 +52,15 @@ class codegen_matrices_tests(unittest.TestCase):
             y, np.array([1.5, 0., 1.5, 0., 0.]), decimal=5)
 
     def test_update_P(self):
-        import mat_emosqp
+        import mat_emrlqp
 
         # Update matrix P
         Px = self.P_new.data
         Px_idx = np.arange(self.P_new.nnz)
-        mat_emosqp.update_P(Px, Px_idx, len(Px))
+        mat_emrlqp.update_P(Px, Px_idx, len(Px))
 
         # Solve problem
-        x, y, _, _, _ = mat_emosqp.solve()
+        x, y, _, _, _ = mat_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x, np.array([0., 5.]), decimal=5)
@@ -70,15 +70,15 @@ class codegen_matrices_tests(unittest.TestCase):
         # Update matrix P to the original value
         Px = self.P.data
         Px_idx = np.arange(self.P.nnz)
-        mat_emosqp.update_P(Px, Px_idx, len(Px))
+        mat_emrlqp.update_P(Px, Px_idx, len(Px))
 
     def test_update_P_allind(self):
-        import mat_emosqp
+        import mat_emrlqp
 
         # Update matrix P
         Px = self.P_new.data
-        mat_emosqp.update_P(Px, None, 0)
-        x, y, _, _, _ = mat_emosqp.solve()
+        mat_emrlqp.update_P(Px, None, 0)
+        x, y, _, _, _ = mat_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x, np.array([0., 5.]), decimal=5)
@@ -87,18 +87,18 @@ class codegen_matrices_tests(unittest.TestCase):
 
         # Update matrix P to the original value
         Px_idx = np.arange(self.P.nnz)
-        mat_emosqp.update_P(Px, Px_idx, len(Px))
+        mat_emrlqp.update_P(Px, Px_idx, len(Px))
 
     def test_update_A(self):
-        import mat_emosqp
+        import mat_emrlqp
 
         # Update matrix A
         Ax = self.A_new.data
         Ax_idx = np.arange(self.A_new.nnz)
-        mat_emosqp.update_A(Ax, Ax_idx, len(Ax))
+        mat_emrlqp.update_A(Ax, Ax_idx, len(Ax))
 
         # Solve problem
-        x, y, _, _, _ = mat_emosqp.solve()
+        x, y, _, _, _ = mat_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x,
@@ -109,15 +109,15 @@ class codegen_matrices_tests(unittest.TestCase):
         # Update matrix A to the original value
         Ax = self.A.data
         Ax_idx = np.arange(self.A.nnz)
-        mat_emosqp.update_A(Ax, Ax_idx, len(Ax))
+        mat_emrlqp.update_A(Ax, Ax_idx, len(Ax))
 
     def test_update_A_allind(self):
-        import mat_emosqp
+        import mat_emrlqp
 
         # Update matrix A
         Ax = self.A_new.data
-        mat_emosqp.update_A(Ax, None, 0)
-        x, y, _, _, _ = mat_emosqp.solve()
+        mat_emrlqp.update_A(Ax, None, 0)
+        x, y, _, _, _ = mat_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x,
@@ -128,20 +128,20 @@ class codegen_matrices_tests(unittest.TestCase):
         # Update matrix A to the original value
         Ax = self.A.data
         Ax_idx = np.arange(self.A.nnz)
-        mat_emosqp.update_A(Ax, Ax_idx, len(Ax))
+        mat_emrlqp.update_A(Ax, Ax_idx, len(Ax))
 
     def test_update_P_A_indP_indA(self):
-        import mat_emosqp
+        import mat_emrlqp
 
         # Update matrices P and A
         Px = self.P_new.data
         Px_idx = np.arange(self.P_new.nnz)
         Ax = self.A_new.data
         Ax_idx = np.arange(self.A_new.nnz)
-        mat_emosqp.update_P_A(Px, Px_idx, len(Px), Ax, Ax_idx, len(Ax))
+        mat_emrlqp.update_P_A(Px, Px_idx, len(Px), Ax, Ax_idx, len(Ax))
 
         # Solve problem
-        x, y, _, _, _ = mat_emosqp.solve()
+        x, y, _, _, _ = mat_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x, np.array([4.25, 3.25]), decimal=5)
@@ -151,17 +151,17 @@ class codegen_matrices_tests(unittest.TestCase):
         # Update matrices P and A to the original values
         Px = self.P.data
         Ax = self.A.data
-        mat_emosqp.update_P_A(Px, None, 0, Ax, None, 0)
+        mat_emrlqp.update_P_A(Px, None, 0, Ax, None, 0)
 
     def test_update_P_A_indP(self):
-        import mat_emosqp
+        import mat_emrlqp
 
         # Update matrices P and A
         Px = self.P_new.data
         Px_idx = np.arange(self.P_new.nnz)
         Ax = self.A_new.data
-        mat_emosqp.update_P_A(Px, Px_idx, len(Px), Ax, None, 0)
-        x, y, _, _, _ = mat_emosqp.solve()
+        mat_emrlqp.update_P_A(Px, Px_idx, len(Px), Ax, None, 0)
+        x, y, _, _, _ = mat_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x, np.array([4.25, 3.25]), decimal=5)
@@ -171,17 +171,17 @@ class codegen_matrices_tests(unittest.TestCase):
         # Update matrices P and A to the original values
         Px = self.P.data
         Ax = self.A.data
-        mat_emosqp.update_P_A(Px, None, 0, Ax, None, 0)
+        mat_emrlqp.update_P_A(Px, None, 0, Ax, None, 0)
 
     def test_update_P_A_indA(self):
-        import mat_emosqp
+        import mat_emrlqp
 
         # Update matrices P and A
         Px = self.P_new.data
         Ax = self.A_new.data
         Ax_idx = np.arange(self.A_new.nnz)
-        mat_emosqp.update_P_A(Px, None, 0, Ax, Ax_idx, len(Ax))
-        x, y, _, _, _ = mat_emosqp.solve()
+        mat_emrlqp.update_P_A(Px, None, 0, Ax, Ax_idx, len(Ax))
+        x, y, _, _, _ = mat_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x, np.array([4.25, 3.25]), decimal=5)
@@ -193,16 +193,16 @@ class codegen_matrices_tests(unittest.TestCase):
         Px_idx = np.arange(self.P.nnz)
         Ax = self.A.data
         Ax_idx = np.arange(self.A.nnz)
-        mat_emosqp.update_P_A(Px, Px_idx, len(Px), Ax, Ax_idx, len(Ax))
+        mat_emrlqp.update_P_A(Px, Px_idx, len(Px), Ax, Ax_idx, len(Ax))
 
     def test_update_P_A_allind(self):
-        import mat_emosqp
+        import mat_emrlqp
 
         # Update matrices P and A
         Px = self.P_new.data
         Ax = self.A_new.data
-        mat_emosqp.update_P_A(Px, None, 0, Ax, None, 0)
-        x, y, _, _, _ = mat_emosqp.solve()
+        mat_emrlqp.update_P_A(Px, None, 0, Ax, None, 0)
+        x, y, _, _, _ = mat_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x, np.array([4.25, 3.25]), decimal=5)
@@ -212,4 +212,4 @@ class codegen_matrices_tests(unittest.TestCase):
         # Update matrices P and A to the original values
         Px = self.P.data
         Ax = self.A.data
-        mat_emosqp.update_P_A(Px, None, 0, Ax, None, 0)
+        mat_emrlqp.update_P_A(Px, None, 0, Ax, None, 0)

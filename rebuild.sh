@@ -10,3 +10,4 @@ cd "$(dirname "$0")"
 pip uninstall -y rlqp
 rm -rf build dist rlqp.egg-info .eggs rlqp_sources/build extension/src/rlqp.a
 python setup.py install
+python setup.py test

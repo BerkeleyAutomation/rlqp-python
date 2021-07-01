@@ -2,7 +2,7 @@
 from warnings import warn
 import numpy as np
 import scipy.sparse as sparse
-import rlqp._rlqp as _osqp
+import rlqp._rlqp as _rlqp
 
 
 def linsys_solver_str_to_int(settings):
@@ -12,16 +12,16 @@ def linsys_solver_str_to_int(settings):
                             "is required to be a string.")
         linsys_solver_str = linsys_solver_str.lower()
         if linsys_solver_str == 'qdldl':
-            settings['linsys_solver'] = _osqp.constant('QDLDL_SOLVER')
+            settings['linsys_solver'] = _rlqp.constant('QDLDL_SOLVER')
         elif linsys_solver_str == 'mkl pardiso':
-            settings['linsys_solver'] = _osqp.constant('MKL_PARDISO_SOLVER')
+            settings['linsys_solver'] = _rlqp.constant('MKL_PARDISO_SOLVER')
         # Default solver: QDLDL
         elif linsys_solver_str == '':
-            settings['linsys_solver'] = _osqp.constant('QDLDL_SOLVER')
+            settings['linsys_solver'] = _rlqp.constant('QDLDL_SOLVER')
         else:   # default solver: QDLDL
             warn("Linear system solver not recognized. " +
                  "Using default solver QDLDL.")
-            settings['linsys_solver'] = _osqp.constant('QDLDL_SOLVER')
+            settings['linsys_solver'] = _rlqp.constant('QDLDL_SOLVER')
         return settings
 
 
@@ -130,8 +130,8 @@ def prepare_data(P=None, q=None, A=None, l=None, u=None, **settings):
             A.sort_indices()
 
         # Convert infinity values to OSQP Infinity
-        u = np.minimum(u, _osqp.constant('OSQP_INFTY'))
-        l = np.maximum(l, -_osqp.constant('OSQP_INFTY'))
+        u = np.minimum(u, _rlqp.constant('OSQP_INFTY'))
+        l = np.maximum(l, -_rlqp.constant('OSQP_INFTY'))
 
         # Convert linsys_solver string to integer
         settings = linsys_solver_str_to_int(settings)

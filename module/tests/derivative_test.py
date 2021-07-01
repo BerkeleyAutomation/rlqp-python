@@ -1,6 +1,6 @@
-# Test osqp python module
-import osqp
-# import osqppurepy as osqp
+# Test rlqp python module
+import rlqp
+# import rlqppurepy as rlqp
 import numpy as np
 import numpy.random as npr
 from scipy import sparse
@@ -18,7 +18,7 @@ grad_precision = 1e-5
 rel_tol = 1e-3
 abs_tol = 1e-3
 
-# OSQP settings
+# RLQP settings
 eps_abs = 1e-10
 eps_rel = 1e-10
 max_iter = 10000
@@ -40,8 +40,8 @@ class derivative_tests(unittest.TestCase):
         return [P, q,  A, l, u, true_x]
 
     def get_grads(self, P, q, A, l, u, true_x):
-        # Get gradients by solving with osqp
-        m = osqp.OSQP()
+        # Get gradients by solving with rlqp
+        m = rlqp.RLQP()
         m.setup(P, q, A, l, u, eps_abs=eps_abs, eps_rel=eps_rel,
                 max_iter=max_iter, verbose=False)
         results = m.solve()
@@ -63,7 +63,7 @@ class derivative_tests(unittest.TestCase):
             return dq
 
         def f(q):
-            m = osqp.OSQP()
+            m = rlqp.RLQP()
             m.setup(P, q, A, l, u, eps_abs=eps_abs, eps_rel=eps_rel,
                     max_iter=max_iter, verbose=False)
             res = m.solve()
@@ -96,7 +96,7 @@ class derivative_tests(unittest.TestCase):
 
         def f(P_val):
             P_qp = sparse.csc_matrix((P_val, P_idx), shape=P.shape)
-            m = osqp.OSQP()
+            m = rlqp.RLQP()
             m.setup(P_qp, q, A, l, u, eps_abs=eps_abs,
                     eps_rel=eps_rel, max_iter=max_iter, verbose=False)
             res = m.solve()
@@ -132,7 +132,7 @@ class derivative_tests(unittest.TestCase):
 
         def f(A_val):
             A_qp = sparse.csc_matrix((A_val, A_idx), shape=A.shape)
-            m = osqp.OSQP()
+            m = rlqp.RLQP()
             m.setup(P, q, A_qp, l, u, eps_abs=eps_abs,
                     eps_rel=eps_rel, max_iter=max_iter, verbose=False)
             res = m.solve()
@@ -164,7 +164,7 @@ class derivative_tests(unittest.TestCase):
             return dl
 
         def f(l):
-            m = osqp.OSQP()
+            m = rlqp.RLQP()
             m.setup(P, q, A, l, u, eps_abs=eps_abs, eps_rel=eps_rel,
                     max_iter=max_iter, verbose=False)
             res = m.solve()
@@ -195,7 +195,7 @@ class derivative_tests(unittest.TestCase):
             return du
 
         def f(u):
-            m = osqp.OSQP()
+            m = rlqp.RLQP()
             m.setup(P, q, A, l, u, eps_abs=eps_abs, eps_rel=eps_rel,
                     max_iter=max_iter, verbose=False)
             res = m.solve()

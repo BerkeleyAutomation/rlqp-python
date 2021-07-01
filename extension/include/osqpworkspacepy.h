@@ -261,7 +261,7 @@ static PyObject *OSQP_get_workspace(OSQP *self){
     }
 
     if(self->workspace->linsys_solver->type != QDLDL_SOLVER) {
-        PyErr_SetString(PyExc_ValueError, "OSQP setup was not performed using QDLDL! Run setup with linsys_solver set as QDLDL");
+        PyErr_SetString(PyExc_ValueError, "RLQP setup was not performed using QDLDL! Run setup with linsys_solver set as QDLDL");
         return (PyObject *) NULL;
     }
 

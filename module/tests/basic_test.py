@@ -1,8 +1,8 @@
-# Test osqp python module
-import osqp
-from osqp._osqp import constant
-from osqp.tests.utils import solve_high_accuracy, rel_tol, abs_tol, decimal_tol
-# import osqppurepy as osqp
+# Test rlqp python module
+import rlqp
+from rlqp._rlqp import constant
+from rlqp.tests.utils import solve_high_accuracy, rel_tol, abs_tol, decimal_tol
+# import rlqppurepy as rlqp
 import numpy as np
 from scipy import sparse
 
@@ -33,7 +33,7 @@ class basic_tests(unittest.TestCase):
                      'polish': False,
                      'check_termination': 1,
                      'warm_start': True}
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 
@@ -132,7 +132,7 @@ class basic_tests(unittest.TestCase):
         # Setup with different rho and update
         default_opts = self.opts.copy()
         default_opts['rho'] = 0.7
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **default_opts)
         self.model.update_settings(rho=self.opts['rho'])
@@ -144,7 +144,7 @@ class basic_tests(unittest.TestCase):
     #  def test_update_time_limit(self):
     #      res = self.model.solve()
     #      self.assertEqual(res.info.status_val,
-    #                       constant('OSQP_SOLVED'))
+    #                       constant('RLQP_SOLVED'))
     #
     #      # Ensure the solver will time out
     #      self.model.update_settings(time_limit=1e-3, verbose=True,
@@ -154,7 +154,7 @@ class basic_tests(unittest.TestCase):
     #
     #      res = self.model.solve()
     #      self.assertEqual(res.info.status_val,
-    #                       constant('OSQP_TIME_LIMIT_REACHED'))
+    #                       constant('RLQP_TIME_LIMIT_REACHED'))
 
     def test_upper_triangular_P(self):
         res_default = self.model.solve()
@@ -163,7 +163,7 @@ class basic_tests(unittest.TestCase):
         P_triu = sparse.triu(self.P, format='csc')
 
         # Setup and solve with upper triangular part only
-        m = osqp.OSQP()
+        m = rlqp.RLQP()
         m.setup(P=P_triu, q=self.q, A=self.A, l=self.l, u=self.u,
                 **self.opts)
         res_triu = m.solve()

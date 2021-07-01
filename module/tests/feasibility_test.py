@@ -1,6 +1,6 @@
-# Test osqp python module
-import osqp
-# import osqppurepy as osqp
+# Test rlqp python module
+import rlqp
+# import rlqppurepy as rlqp
 import numpy as np
 from scipy import sparse
 import scipy as sp
@@ -9,7 +9,7 @@ import scipy as sp
 import unittest
 import numpy.testing as nptest
 
-from osqp.tests.utils import solve_high_accuracy, rel_tol, abs_tol, decimal_tol
+from rlqp.tests.utils import solve_high_accuracy, rel_tol, abs_tol, decimal_tol
 
 
 class feasibility_tests(unittest.TestCase):
@@ -40,7 +40,7 @@ class feasibility_tests(unittest.TestCase):
                      'polish': False,
                      'warm_start': True,
                      'polish_refine_iter': 4}
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 

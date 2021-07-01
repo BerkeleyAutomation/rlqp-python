@@ -1,9 +1,9 @@
 """
-Python interface module for OSQP solver v0.6.2.post0
+Python interface module for RLQP solver v0.6.2.post0
 """
 from __future__ import print_function
 from builtins import object
-import rlqp._rlqp as _osqp  # Internal low level module
+import rlqp._rlqp as _rlqp  # Internal low level module
 import numpy as np
 import scipy.sparse as spa
 from warnings import warn
@@ -16,14 +16,14 @@ import qdldl
 
 class RLQP(object):
     def __init__(self):
-        self._model = _osqp.RLQP()
+        self._model = _rlqp.RLQP()
 
     def version(self):
         return self._model.version()
 
     def setup(self, P=None, q=None, A=None, l=None, u=None, **settings):
         """
-        Setup OSQP solver problem of the form
+        Setup RLQP solver problem of the form
 
         minimize     1/2 x' * P * x + q' * x
         subject to   l <= A * x <= u
@@ -39,7 +39,7 @@ class RLQP(object):
     def update(self, q=None, l=None, u=None,
                Px=None, Px_idx=np.array([]), Ax=None, Ax_idx=np.array([])):
         """
-        Update OSQP problem arguments
+        Update RLQP problem arguments
         """
 
         # get problem dimensions
@@ -55,7 +55,7 @@ class RLQP(object):
             elif len(l) != m:
                 raise ValueError("l must have length m")
             # Convert values to -OSQP_INFTY
-            l = np.maximum(l, -_osqp.constant('OSQP_INFTY'))
+            l = np.maximum(l, -_rlqp.constant('OSQP_INFTY'))
         if u is not None:
             if not isinstance(u, np.ndarray):
                 raise TypeError("u must be numpy.ndarray, not %s" %
@@ -63,7 +63,7 @@ class RLQP(object):
             elif len(u) != m:
                 raise ValueError("u must have length m")
             # Convert values to OSQP_INFTY
-            u = np.minimum(u, _osqp.constant('OSQP_INFTY'))
+            u = np.minimum(u, _rlqp.constant('OSQP_INFTY'))
         if Ax is None:
             if len(Ax_idx) > 0:
                 raise ValueError("Vector Ax has not been specified")
@@ -138,7 +138,7 @@ class RLQP(object):
 
     def update_settings(self, **kwargs):
         """
-        Update OSQP solver settings
+        Update RLQP solver settings
 
         It is possible to change: 'max_iter', 'eps_abs', 'eps_rel',
                                   'eps_prim_inf', 'eps_dual_inf', 'rho'
@@ -267,7 +267,7 @@ class RLQP(object):
             raise ValueError("Unrecognized fields")
 
     def codegen(self, folder, project_type='', parameters='vectors',
-                python_ext_name='emosqp', force_rewrite=False,
+                python_ext_name='emrlqp', force_rewrite=False,
                 FLOAT=False, LONG=True):
         """
         Generate embeddable C code for the problem
@@ -304,7 +304,7 @@ class RLQP(object):
                 project_type = 'Unix Makefiles'
 
         # Convert workspace to Python
-        sys.stdout.write("Getting workspace from OSQP object... \t\t\t\t")
+        sys.stdout.write("Getting workspace from RLQP object... \t\t\t\t")
         sys.stdout.flush()
         work = self._model._get_workspace()
         print("[done]")

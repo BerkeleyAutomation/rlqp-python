@@ -1,7 +1,7 @@
-# Test osqp python module
-import osqp
-from osqp._osqp import constant
-# import osqppurepy as osqp
+# Test rlqp python module
+import rlqp
+from rlqp._rlqp import constant
+# import rlqppurepy as rlqp
 import numpy as np
 from scipy import sparse
 
@@ -35,11 +35,11 @@ class dual_infeasibility_tests(unittest.TestCase):
         self.l = np.array([0., 0.])
         self.u = np.array([np.inf, np.inf])
 
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 
-        # Solve problem with OSQP
+        # Solve problem with RLQP
         res = self.model.solve()
 
         # Assert close
@@ -55,11 +55,11 @@ class dual_infeasibility_tests(unittest.TestCase):
         self.l = np.array([-np.inf, -np.inf])
         self.u = np.array([2., 3.])
 
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 
-        # Solve problem with OSQP
+        # Solve problem with RLQP
         res = self.model.solve()
 
         # Assert close
@@ -76,7 +76,7 @@ class dual_infeasibility_tests(unittest.TestCase):
         self.l = np.array([1., 1., 0., 0.])
         self.u = np.inf * np.ones(self.m)
 
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 

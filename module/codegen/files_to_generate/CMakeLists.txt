@@ -2,7 +2,7 @@
 cmake_minimum_required (VERSION 3.5)
 
 # Project name
-project (osqp)
+project (rlqp)
 
 
 # Set the output folder where your program will be created

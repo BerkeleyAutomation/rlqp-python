@@ -1,6 +1,6 @@
-# Test osqp python module
-import osqp
-# import osqppurepy as osqp
+# Test rlqp python module
+import rlqp
+# import rlqppurepy as rlqp
 import numpy as np
 from scipy import sparse
 
@@ -29,19 +29,19 @@ class codegen_vectors_tests(unittest.TestCase):
                      'alpha': 1.6,
                      'max_iter': 10000,
                      'warm_start': True}
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 
     def test_solve(self):
         # Generate the code
-        self.model.codegen('code', python_ext_name='vec_emosqp',
+        self.model.codegen('code', python_ext_name='vec_emrlqp',
                            force_rewrite=True)
         sh.rmtree('code')
-        import vec_emosqp
+        import vec_emrlqp
 
         # Solve problem
-        x, y, _, _, _ = vec_emosqp.solve()
+        x, y, _, _, _ = vec_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x, np.array([0., 5.]), decimal=5)
@@ -49,12 +49,12 @@ class codegen_vectors_tests(unittest.TestCase):
             y, np.array([1.66666667, 0., 1.33333333, 0., 0.]), decimal=5)
 
     def test_update_q(self):
-        import vec_emosqp
+        import vec_emrlqp
 
         # Update linear cost and solve the problem
         q_new = np.array([10., 20.])
-        vec_emosqp.update_lin_cost(q_new)
-        x, y, _, _, _ = vec_emosqp.solve()
+        vec_emrlqp.update_lin_cost(q_new)
+        x, y, _, _, _ = vec_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x, np.array([0., 5.]), decimal=5)
@@ -62,15 +62,15 @@ class codegen_vectors_tests(unittest.TestCase):
             y, np.array([3.33333334, 0., 6.66666667, 0., 0.]), decimal=5)
 
         # Update linear cost to the original value
-        vec_emosqp.update_lin_cost(self.q)
+        vec_emrlqp.update_lin_cost(self.q)
 
     def test_update_l(self):
-        import vec_emosqp
+        import vec_emrlqp
 
         # Update lower bound
         l_new = -100. * np.ones(self.m)
-        vec_emosqp.update_lower_bound(l_new)
-        x, y, _, _, _ = vec_emosqp.solve()
+        vec_emrlqp.update_lower_bound(l_new)
+        x, y, _, _, _ = vec_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(x, np.array([0., 5.]), decimal=5)
@@ -78,15 +78,15 @@ class codegen_vectors_tests(unittest.TestCase):
             y, np.array([1.66666667, 0., 1.33333333, 0., 0.]), decimal=5)
 
         # Update lower bound to the original value
-        vec_emosqp.update_lower_bound(self.l)
+        vec_emrlqp.update_lower_bound(self.l)
 
     def test_update_u(self):
-        import vec_emosqp
+        import vec_emrlqp
 
         # Update upper bound
         u_new = 1000. * np.ones(self.m)
-        vec_emosqp.update_upper_bound(u_new)
-        x, y, _, _, _ = vec_emosqp.solve()
+        vec_emrlqp.update_upper_bound(u_new)
+        x, y, _, _, _ = vec_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(
@@ -95,16 +95,16 @@ class codegen_vectors_tests(unittest.TestCase):
             y, np.array([0., 0., 1.33333333, 0., 0.]), decimal=4)
 
         # Update upper bound to the original value
-        vec_emosqp.update_upper_bound(self.u)
+        vec_emrlqp.update_upper_bound(self.u)
 
     def test_update_bounds(self):
-        import vec_emosqp
+        import vec_emrlqp
 
         # Update upper bound
         l_new = -100. * np.ones(self.m)
         u_new = 1000. * np.ones(self.m)
-        vec_emosqp.update_bounds(l_new, u_new)
-        x, y, _, _, _ = vec_emosqp.solve()
+        vec_emrlqp.update_bounds(l_new, u_new)
+        x, y, _, _, _ = vec_emrlqp.solve()
 
         # Assert close
         nptest.assert_array_almost_equal(
@@ -113,4 +113,4 @@ class codegen_vectors_tests(unittest.TestCase):
             y, np.array([0., 0., 0., -0.8, 0.]), decimal=4)
 
         # Update upper bound to the original value
-        vec_emosqp.update_bounds(self.l, self.u)
+        vec_emrlqp.update_bounds(self.l, self.u)

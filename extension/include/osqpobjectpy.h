@@ -78,7 +78,7 @@ static PyObject * OSQP_solve(OSQP *self) {
     Py_END_ALLOW_THREADS;
 
     if(exitflag){
-        PyErr_SetString(PyExc_ValueError, "OSQP solve error!");
+        PyErr_SetString(PyExc_ValueError, "RLQP solve error!");
         return (PyObject *) NULL;
     }
 
@@ -1334,15 +1334,15 @@ static PyObject *OSQP_update_time_limit(OSQP *self, PyObject *args){
 static PyMethodDef OSQP_methods[] = {
     {"setup", (PyCFunction)OSQP_setup,METH_VARARGS|METH_KEYWORDS, PyDoc_STR("Setup OSQP problem")},
     {"solve", (PyCFunction)OSQP_solve, METH_VARARGS, PyDoc_STR("Solve OSQP problem")},
-    {"version",	(PyCFunction)OSQP_version, METH_NOARGS, PyDoc_STR("OSQP version")},
+    {"version",	(PyCFunction)OSQP_version, METH_NOARGS, PyDoc_STR("RLQP version")},
     {"dimensions", (PyCFunction)OSQP_dimensions, METH_NOARGS, PyDoc_STR("Return problem dimensions (n, m)")},
     {"update_lin_cost",	(PyCFunction)OSQP_update_lin_cost, METH_VARARGS, PyDoc_STR("Update OSQP problem linear cost")},
     {"update_lower_bound", (PyCFunction)OSQP_update_lower_bound, METH_VARARGS, PyDoc_STR("Update OSQP problem lower bound")},
     {"update_upper_bound", (PyCFunction)OSQP_update_upper_bound, METH_VARARGS, PyDoc_STR("Update OSQP problem upper bound")},
     {"update_bounds", (PyCFunction)OSQP_update_bounds, METH_VARARGS, PyDoc_STR("Update OSQP problem bounds")},
-	{"update_P", (PyCFunction)OSQP_update_P, METH_VARARGS, PyDoc_STR("Update OSQP problem quadratic cost matrix")},
-	{"update_P_A", (PyCFunction)OSQP_update_P_A, METH_VARARGS, PyDoc_STR("Update OSQP problem matrices")},
-	{"update_A", (PyCFunction)OSQP_update_A, METH_VARARGS, PyDoc_STR("Update OSQP problem constraint matrix")},
+    {"update_P", (PyCFunction)OSQP_update_P, METH_VARARGS, PyDoc_STR("Update OSQP problem quadratic cost matrix")},
+    {"update_P_A", (PyCFunction)OSQP_update_P_A, METH_VARARGS, PyDoc_STR("Update OSQP problem matrices")},
+    {"update_A", (PyCFunction)OSQP_update_A, METH_VARARGS, PyDoc_STR("Update OSQP problem constraint matrix")},
     {"warm_start", (PyCFunction)OSQP_warm_start, METH_VARARGS, PyDoc_STR("Warm start primal and dual variables")},
     {"warm_start_x", (PyCFunction)OSQP_warm_start_x, METH_VARARGS, PyDoc_STR("Warm start primal variable")},
     {"warm_start_y", (PyCFunction)OSQP_warm_start_y, METH_VARARGS, PyDoc_STR("Warm start dual variable")},
@@ -1522,7 +1522,7 @@ static PyTypeObject OSQP_Type = {
     0,                                  /*tp_setattro*/
     0,                                  /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,                 /*tp_flags*/
-    "OSQP solver",                      /* tp_doc */
+    "RLQP solver",                      /* tp_doc */
     0,		                            /* tp_traverse */
     0,		                            /* tp_clear */
     0,		                            /* tp_richcompare */

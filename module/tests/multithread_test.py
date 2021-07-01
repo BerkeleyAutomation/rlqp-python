@@ -1,6 +1,6 @@
-# Test osqp python module
-import osqp
-# import osqppurepy as osqp
+# Test rlqp python module
+import rlqp
+# import rlqppurepy as rlqp
 from multiprocessing.pool import ThreadPool
 import time
 import numpy as np
@@ -23,7 +23,7 @@ class multithread_tests(unittest.TestCase):
             Ad = sparse.random(m, n, density=0.3, format='csc')
             b = np.random.randn(m)
 
-            # OSQP data
+            # RLQP data
             P = sparse.block_diag(
                 [sparse.csc_matrix((n, n)), sparse.eye(m)], format='csc')
             q = np.zeros(n+m)
@@ -37,7 +37,7 @@ class multithread_tests(unittest.TestCase):
 
         def f(i):
             P, q, A, l, u = data[i]
-            m = osqp.OSQP()
+            m = rlqp.RLQP()
             m.setup(P, q, A, l, u, verbose=False)
             m.solve()
 

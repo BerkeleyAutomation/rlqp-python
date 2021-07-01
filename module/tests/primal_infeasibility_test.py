@@ -1,7 +1,7 @@
-# Test osqp python module
-import osqp
-from osqp._osqp import constant
-# import osqppurepy as osqp
+# Test rlqp python module
+import rlqp
+from rlqp._rlqp import constant
+# import rlqppurepy as rlqp
 from scipy import sparse
 import scipy as sp
 import numpy as np
@@ -48,11 +48,11 @@ class primal_infeasibility_tests(unittest.TestCase):
         # Convert A to csc
         self.A = self.A.tocsc()
 
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 
-        # Solve problem with OSQP
+        # Solve problem with RLQP
         res = self.model.solve()
 
         # Assert close
@@ -69,7 +69,7 @@ class primal_infeasibility_tests(unittest.TestCase):
         self.l = np.array([1., 1., 0., 0.])
         self.u = np.inf * np.ones(self.m)
 
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 

@@ -1,4 +1,4 @@
-import osqp
+import rlqp
 import numpy as np
 from scipy import sparse
 
@@ -21,7 +21,7 @@ class mkl_pardiso_tests(unittest.TestCase):
 
     def test_issue14(self):
 
-        m = osqp.OSQP()
+        m = rlqp.RLQP()
         m.setup(self.P, self.q, self.A, self.l, self.u,
                 linsys_solver="mkl pardiso")
         m.solve()
