@@ -12,11 +12,11 @@ import distutils.sysconfig as sysconfig
 
 import argparse
 
-OSQP_ARG_MARK = '--osqp'
+RLQP_ARG_MARK = '--rlqp'
 
 parser = argparse.ArgumentParser(description='RLQP Setup script arguments.')
 parser.add_argument(
-    OSQP_ARG_MARK,
+    RLQP_ARG_MARK,
     dest='rlqp',
     action='store_true',
     default=False,
@@ -36,8 +36,8 @@ parser.add_argument(
 args, unknown = parser.parse_known_args()
 
 # necessary to remove RLQP args before passing to setup:
-if OSQP_ARG_MARK in sys.argv:
-    sys.argv = sys.argv[0:sys.argv.index(OSQP_ARG_MARK)]
+if RLQP_ARG_MARK in sys.argv:
+    sys.argv = sys.argv[0:sys.argv.index(RLQP_ARG_MARK)]
 
 # Add parameters to cmake_args and define_macros
 cmake_args = ["-DUNITTESTS=OFF"]
@@ -80,12 +80,15 @@ define_macros += [('PYTHON', None)]
 # Pass python include dirs to cmake
 cmake_args += ['-DPYTHON_INCLUDE_DIRS=%s' % sysconfig.get_python_inc()]
 
+import torch
+print("Using Torch_DIR=%s/Torch" % torch.utils.cmake_prefix_path)
+cmake_args += ['-DTorch_DIR=%s/Torch' % torch.utils.cmake_prefix_path]
 
 # Define rlqp and qdldl directories
 current_dir = os.getcwd()
-osqp_dir = os.path.join('osqp_sources')
-osqp_build_dir = os.path.join(osqp_dir, 'build')
-qdldl_dir = os.path.join(osqp_dir, 'lin_sys', 'direct', 'qdldl')
+rlqp_dir = os.path.join('rlqp_sources')
+rlqp_build_dir = os.path.join(rlqp_dir, 'build')
+qdldl_dir = os.path.join(rlqp_dir, 'lin_sys', 'direct', 'qdldl')
 
 
 # Interface files
@@ -98,7 +101,7 @@ class get_numpy_include(object):
 
 
 include_dirs = [
-    os.path.join(osqp_dir, 'include'),      # osqp.h
+    os.path.join(rlqp_dir, 'include'),      # osqp.h
     os.path.join(qdldl_dir),                # qdldl_interface header to
                                             # extract workspace for codegen
     os.path.join(qdldl_dir, "qdldl_sources",
@@ -142,14 +145,14 @@ Copy C sources for code generation
 '''
 
 # Create codegen directory
-osqp_codegen_sources_dir = os.path.join('module', 'codegen', 'sources')
-if os.path.exists(osqp_codegen_sources_dir):
-    sh.rmtree(osqp_codegen_sources_dir)
-os.makedirs(osqp_codegen_sources_dir)
+rlqp_codegen_sources_dir = os.path.join('module', 'codegen', 'sources')
+if os.path.exists(rlqp_codegen_sources_dir):
+    sh.rmtree(rlqp_codegen_sources_dir)
+os.makedirs(rlqp_codegen_sources_dir)
 
 # RLQP C files
-cfiles = [os.path.join(osqp_dir, 'src', f)
-          for f in os.listdir(os.path.join(osqp_dir, 'src'))
+cfiles = [os.path.join(rlqp_dir, 'src', f)
+          for f in os.listdir(os.path.join(rlqp_dir, 'src'))
           if f.endswith('.c') and f not in ('cs.c', 'ctrlc.c', 'polish.c',
                                             'lin_sys.c')]
 cfiles += [os.path.join(qdldl_dir, f)
@@ -158,7 +161,7 @@ cfiles += [os.path.join(qdldl_dir, f)
 cfiles += [os.path.join(qdldl_dir, 'qdldl_sources', 'src', f)
            for f in os.listdir(os.path.join(qdldl_dir, 'qdldl_sources',
                                             'src'))]
-rlqp_codegen_sources_c_dir = os.path.join(osqp_codegen_sources_dir, 'src')
+rlqp_codegen_sources_c_dir = os.path.join(rlqp_codegen_sources_dir, 'src')
 if os.path.exists(rlqp_codegen_sources_c_dir):  # Create destination directory
     sh.rmtree(rlqp_codegen_sources_c_dir)
 os.makedirs(rlqp_codegen_sources_c_dir)
@@ -166,8 +169,8 @@ for f in cfiles:  # Copy C files
     copy(f, rlqp_codegen_sources_c_dir)
 
 # List with RLQP H files
-hfiles = [os.path.join(osqp_dir, 'include', f)
-          for f in os.listdir(os.path.join(osqp_dir, 'include'))
+hfiles = [os.path.join(rlqp_dir, 'include', f)
+          for f in os.listdir(os.path.join(rlqp_dir, 'include'))
           if f.endswith('.h') and f not in ('qdldl_types.h',
                                             'osqp_configure.h',
                                             'cs.h', 'ctrlc.h', 'polish.h',
@@ -179,7 +182,7 @@ hfiles += [os.path.join(qdldl_dir, 'qdldl_sources', 'include', f)
            for f in os.listdir(os.path.join(qdldl_dir, 'qdldl_sources',
                                             'include'))
            if f.endswith('.h')]
-rlqp_codegen_sources_h_dir = os.path.join(osqp_codegen_sources_dir, 'include')
+rlqp_codegen_sources_h_dir = os.path.join(rlqp_codegen_sources_dir, 'include')
 if os.path.exists(rlqp_codegen_sources_h_dir):  # Create destination directory
     sh.rmtree(rlqp_codegen_sources_h_dir)
 os.makedirs(rlqp_codegen_sources_h_dir)
@@ -187,10 +190,10 @@ for f in hfiles:  # Copy header files
     copy(f, rlqp_codegen_sources_h_dir)
 
 # List with RLQP configure files
-configure_files = [os.path.join(osqp_dir, 'configure', 'osqp_configure.h.in'),
+configure_files = [os.path.join(rlqp_dir, 'configure', 'osqp_configure.h.in'),
                    os.path.join(qdldl_dir, 'qdldl_sources', 'configure',
                                 'qdldl_types.h.in')]
-rlqp_codegen_sources_configure_dir = os.path.join(osqp_codegen_sources_dir,
+rlqp_codegen_sources_configure_dir = os.path.join(rlqp_codegen_sources_dir,
                                                   'configure')
 if os.path.exists(rlqp_codegen_sources_configure_dir):
     sh.rmtree(rlqp_codegen_sources_configure_dir)
@@ -199,9 +202,9 @@ for f in configure_files:  # Copy configure files
     copy(f, rlqp_codegen_sources_configure_dir)
 
 # Copy cmake files
-copy(os.path.join(osqp_dir, 'src',     'CMakeLists.txt'),
+copy(os.path.join(rlqp_dir, 'src',     'CMakeLists.txt'),
      rlqp_codegen_sources_c_dir)
-copy(os.path.join(osqp_dir, 'include', 'CMakeLists.txt'),
+copy(os.path.join(rlqp_dir, 'include', 'CMakeLists.txt'),
      rlqp_codegen_sources_h_dir)
 
 
@@ -210,10 +213,10 @@ class build_ext_rlqp(build_ext):
         # Compile RLQP using CMake
 
         # Create build directory
-        if os.path.exists(osqp_build_dir):
-            sh.rmtree(osqp_build_dir)
-        os.makedirs(osqp_build_dir)
-        os.chdir(osqp_build_dir)
+        if os.path.exists(rlqp_build_dir):
+            sh.rmtree(rlqp_build_dir)
+        os.makedirs(rlqp_build_dir)
+        os.chdir(rlqp_build_dir)
 
         try:
             check_output(['cmake', '--version'])
@@ -229,7 +232,7 @@ class build_ext_rlqp(build_ext):
         os.chdir(current_dir)
 
         # Copy static library to src folder
-        lib_origin = [osqp_build_dir, 'out'] + lib_subdir + [lib_name]
+        lib_origin = [rlqp_build_dir, 'out'] + lib_subdir + [lib_name]
         lib_origin = os.path.join(*lib_origin)
         copyfile(lib_origin, os.path.join('extension', 'src', lib_name))
 
@@ -263,9 +266,9 @@ with open('requirements.txt') as f:
 
 setup(name='rlqp',
       version='0.6.2.post0',
-      author='Bartolomeo Stellato, Goran Banjac',
+      author='Bartolomeo Stellato, Goran Banjac, Jeff Ichnowski, Paras Jain',
       author_email='bartolomeo.stellato@gmail.com',
-      description='RLQP: The Operator Splitting QP Solver',
+      description='RLQP: Reinforcement Learning for QP Solving (based on OSQP)',
       long_description=readme(),
       package_dir={'rlqp': 'module',
                    'rlqppurepy': 'modulepurepy'},
