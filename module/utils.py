@@ -24,6 +24,28 @@ def linsys_solver_str_to_int(settings):
             settings['linsys_solver'] = _rlqp.constant('QDLDL_SOLVER')
         return settings
 
+def adaptive_rho_to_int(settings):
+        adaptive_rho = settings.pop('adaptive_rho', '')
+        if isinstance(adaptive_rho, bool):
+                if adaptive_rho:
+                        settings['adaptive_rho'] = _rlqp.constant('ADAPTIVE_RHO_STANDARD')
+                else:
+                        settings['adaptive_rho'] = _rlqp.constant('ADAPTIVE_RHO_DISABLE')
+        elif isinstance(adaptive_rho, str):
+                adaptive_rho = adaptive_rho.lower()
+                if adaptive_rho == 'disable':
+                        settings['adaptive_rho'] = _rlqp.constant('ADAPTIVE_RHO_DISABLE')
+                elif adaptive_rho == 'standard' or adaptive_rho == '':
+                        settings['adaptive_rho'] = _rlqp.constant('ADAPTIVE_RHO_STANDARD')
+                elif adaptive_rho == 'scalar_policy':
+                        settings['adaptive_rho'] = _rlqp.constant('ADAPTIVE_RHO_SCALAR_POLICY')
+                elif adaptive_rho == 'vector_policy':
+                        settings['adaptive_rho'] = _rlqp.constant('ADAPTIVE_RHO_VECTOR_POLICY')
+                else:
+                        raise ValueError("Unrecognized adaptive_rho setting")
+        else:
+                raise TypeError('Setting adaptive_rho is required to be a boolean or a string')
+        return settings
 
 def prepare_data(P=None, q=None, A=None, l=None, u=None, **settings):
         """
@@ -135,6 +157,7 @@ def prepare_data(P=None, q=None, A=None, l=None, u=None, **settings):
 
         # Convert linsys_solver string to integer
         settings = linsys_solver_str_to_int(settings)
+        settings = adaptive_rho_to_int(settings)
 
         return ((n, m), P.data, P.indices, P.indptr, q,
                 A.data, A.indices, A.indptr,

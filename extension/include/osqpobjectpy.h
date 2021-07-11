@@ -237,12 +237,15 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
 	OSQPSettings * settings;
 
     PyArrayObject *Px, *Pi, *Pp, *q, *Ax, *Ai, *Ap, *l, *u;
+    PyObject *adaptive_rho_policy_obj = NULL;
+    PyObject *adaptive_rho_policy_bytes = NULL;
     static char *kwlist[] = {"dims",                     // nvars and ncons
                              "Px", "Pi", "Pp", "q",      // Cost function
                              "Ax", "Ai", "Ap", "l", "u", // Constraints
                              "scaling",
                              "adaptive_rho", "adaptive_rho_interval",
                              "adaptive_rho_tolerance", "adaptive_rho_fraction",
+                             "adaptive_rho_policy",
                              "rho", "sigma", "max_iter", "eps_abs", "eps_rel",
                              "eps_prim_inf", "eps_dual_inf", "alpha", "delta",
                              "linsys_solver", "polish",
@@ -254,19 +257,20 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
 #ifdef DLONG
 
 // NB: linsys_solver is enum type which is stored as int (regardless on how c_int is defined).
+// Same with adaptive_rho now.
 
 #ifdef DFLOAT
-    static char * argparse_string = "(LL)O!O!O!O!O!O!O!O!O!|LLLffffLffffffiLLLLLLf";
+    static char * argparse_string = "(LL)O!O!O!O!O!O!O!O!O!|LiLffOffLffffffiLLLLLLf";
 #else
-    static char * argparse_string = "(LL)O!O!O!O!O!O!O!O!O!|LLLddddLddddddiLLLLLLd";
+    static char * argparse_string = "(LL)O!O!O!O!O!O!O!O!O!|LiLddOddLddddddiLLLLLLd";
 #endif
 
 #else
 
 #ifdef DFLOAT
-    static char * argparse_string = "(ii)O!O!O!O!O!O!O!O!O!|iiiffffiffffffiiiiiiif";
+    static char * argparse_string = "(ii)O!O!O!O!O!O!O!O!O!|iiiffOffiffffffiiiiiiif";
 #else
-    static char * argparse_string = "(ii)O!O!O!O!O!O!O!O!O!|iiiddddiddddddiiiiiiid";
+    static char * argparse_string = "(ii)O!O!O!O!O!O!O!O!O!|iiiddOddiddddddiiiiiiid";
 #endif
 
 #endif
@@ -279,7 +283,7 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
 
     // Initialize settings
     settings = (OSQPSettings *)c_malloc(sizeof(OSQPSettings));
-	osqp_set_default_settings(settings);
+    osqp_set_default_settings(settings);
 
     if( !PyArg_ParseTupleAndKeywords(args, kwargs, argparse_string, kwlist,
                                      &n, &m,
@@ -297,6 +301,7 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
                                      &settings->adaptive_rho_interval,
                                      &settings->adaptive_rho_tolerance,
                                      &settings->adaptive_rho_fraction,
+                                     &adaptive_rho_policy_obj,
                                      &settings->rho,
                                      &settings->sigma,
                                      &settings->max_iter,
@@ -317,6 +322,13 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
         return (PyObject *) NULL;
     }
 
+    if (adaptive_rho_policy_obj == Py_None || adaptive_rho_policy_obj == NULL)
+        adaptive_rho_policy_bytes = NULL;
+    else if (!PyUnicode_FSConverter(adaptive_rho_policy_obj, &adaptive_rho_policy_bytes))
+        return NULL;
+    else
+        settings->adaptive_rho_policy = PyBytes_AsString(adaptive_rho_policy_bytes);
+
     // Create Data from parsed vectors
     pydata = create_pydata(n, m, Px, Pi, Pp, q, Ax, Ai, Ap, l, u);
     data = create_data(pydata);
@@ -331,6 +343,8 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
     // Cleanup data and settings
     free_data(data, pydata);
     c_free(settings);
+    
+    Py_XDECREF(adaptive_rho_policy_bytes);
 
     if (!exitflag){ // Workspace allocation correct
         // Return workspace

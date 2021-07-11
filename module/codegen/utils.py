@@ -123,6 +123,7 @@ def write_settings_src(f, settings, embedded_flag):
         f.write("%d, " % settings['adaptive_rho'])
         f.write("%d, " % settings['adaptive_rho_interval'])
         f.write("(c_float)%.20f, " % settings['adaptive_rho_tolerance'])
+        f.write("(char *)0, ") # adaptive_rho_policy
 
     f.write("%d, " % settings['max_iter'])
     f.write("(c_float)%.20f, " % settings['eps_abs'])

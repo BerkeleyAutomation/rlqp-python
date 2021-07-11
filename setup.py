@@ -111,7 +111,6 @@ include_dirs = [
 
 sources_files = glob(os.path.join('extension', 'src', '*.c'))
 
-
 # Set optimizer flag
 if system() != 'Windows':
     compile_args = ["-O3"]
@@ -137,6 +136,9 @@ if system() == 'Windows':
     # We need to include this to fix the dependency
     libraries += ['legacy_stdio_definitions']
 
+library_dirs += [os.path.join(os.path.dirname(os.path.dirname(torch.utils.cmake_prefix_path)), "lib")]
+libraries += ["torch", "c10"]
+
 # Add RLQP compiled library
 extra_objects = [os.path.join('extension', 'src', lib_name)]
 
@@ -153,7 +155,7 @@ os.makedirs(rlqp_codegen_sources_dir)
 # RLQP C files
 cfiles = [os.path.join(rlqp_dir, 'src', f)
           for f in os.listdir(os.path.join(rlqp_dir, 'src'))
-          if f.endswith('.c') and f not in ('cs.c', 'ctrlc.c', 'polish.c',
+          if (f.endswith('.c') or f.endswith('.cpp')) and f not in ('cs.c', 'ctrlc.c', 'polish.c',
                                             'lin_sys.c')]
 cfiles += [os.path.join(qdldl_dir, f)
            for f in os.listdir(qdldl_dir)
