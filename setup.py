@@ -258,11 +258,11 @@ def readme():
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
-setup(name='osqp',
+setup(name='rlqp',
       version='0.6.2.post0',
-      author='Bartolomeo Stellato, Goran Banjac',
-      author_email='bartolomeo.stellato@gmail.com',
-      description='OSQP: The Operator Splitting QP Solver',
+      author='Jeff Ichnowski, Paras Jain, Bartolomeo Stellato, Goran Banjac',
+      author_email='jeffi@berkeley.edu',
+      description='RQLP: Accelerating Quadratic Optimization with Reinforcement Learning',
       long_description=readme(),
       package_dir={'osqp': 'module',
                    'osqppurepy': 'modulepurepy'},
@@ -270,7 +270,7 @@ setup(name='osqp',
       setup_requires=["numpy >= 1.7", "qdldl"],
       install_requires=requirements,
       license='Apache 2.0',
-      url="https://osqp.org/",
+      url="https://berkeleyautomation.github.io/rlqp",
       cmdclass={'build_ext': build_ext_osqp},
       packages=packages,
       ext_modules=[_osqp])
