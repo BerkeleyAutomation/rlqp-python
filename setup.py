@@ -52,7 +52,7 @@ if system() == 'Windows':
     if sys.maxsize // 2 ** 32 > 0:
         cmake_args[-1] += ' Win64'
     cmake_build_flags += ['--config', 'Release']
-    lib_name = 'osqp.lib'
+    lib_name = 'rlqp.lib'
     lib_subdir = ['Release']
 
 else:  # Linux or Mac
@@ -264,8 +264,8 @@ setup(name='rlqp',
       author_email='jeffi@berkeley.edu',
       description='RQLP: Accelerating Quadratic Optimization with Reinforcement Learning',
       long_description=readme(),
-      package_dir={'rqlp': 'module',
-                   'rqlppurepy': 'modulepurepy'},
+      package_dir={'rlqp': 'module',
+                   'rlqppurepy': 'modulepurepy'},
       include_package_data=True,  # Include package data from MANIFEST.in
       setup_requires=["numpy >= 1.7", "qdldl"],
       install_requires=requirements,
