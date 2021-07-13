@@ -246,7 +246,7 @@ _osqp = Extension('rlqp._osqp',
 packages = ['rlqp',
             'rlqp.codegen',
             'rlqp.tests',
-            'rqlppurepy']
+            'rlqppurepy']
 
 
 # Read README.rst file
