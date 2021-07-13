@@ -52,7 +52,7 @@ if system() == 'Windows':
     if sys.maxsize // 2 ** 32 > 0:
         cmake_args[-1] += ' Win64'
     cmake_build_flags += ['--config', 'Release']
-    lib_name = 'rlqp.lib'
+    lib_name = 'osqp.lib'
     lib_subdir = ['Release']
 
 else:  # Linux or Mac
