@@ -7,7 +7,7 @@ from builtins import range
 
 # Path of osqp module
 import os.path
-import osqp
+import rlqp as osqp
 files_to_generate_path = os.path.join(osqp.__path__[0],
                                       'codegen', 'files_to_generate')
 

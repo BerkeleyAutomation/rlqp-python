@@ -1,7 +1,7 @@
 # Test osqp python module
-import osqp
-from osqp.tests.utils import solve_high_accuracy, rel_tol, abs_tol, decimal_tol
-# import osqppurepy as osqp
+import rlqp as osqp
+from rlqp.tests.utils import solve_high_accuracy, rel_tol, abs_tol, decimal_tol
+# import rlqp as osqppurepy as osqp
 import numpy as np
 from scipy import sparse
 import scipy as sp

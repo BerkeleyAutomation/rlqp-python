@@ -234,7 +234,7 @@ class build_ext_osqp(build_ext):
         build_ext.build_extensions(self)
 
 
-_osqp = Extension('osqp._osqp',
+_osqp = Extension('rlqp._osqp',
                   define_macros=define_macros,
                   libraries=libraries,
                   library_dirs=library_dirs,
@@ -243,10 +243,10 @@ _osqp = Extension('osqp._osqp',
                   sources=sources_files,
                   extra_compile_args=compile_args)
 
-packages = ['osqp',
-            'osqp.codegen',
-            'osqp.tests',
-            'osqppurepy']
+packages = ['rlqp',
+            'rlqp.codegen',
+            'rlqp.tests',
+            'rlqppurepy']
 
 
 # Read README.rst file
@@ -258,19 +258,19 @@ def readme():
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
-setup(name='osqp',
-      version='0.6.2.post0',
-      author='Bartolomeo Stellato, Goran Banjac',
-      author_email='bartolomeo.stellato@gmail.com',
-      description='OSQP: The Operator Splitting QP Solver',
+setup(name='rlqp',
+      version='0.1',
+      author='Jeff Ichnowski, Paras Jain, Bartolomeo Stellato, Goran Banjac',
+      author_email='jeffi@berkeley.edu',
+      description='RQLP: Accelerating Quadratic Optimization with Reinforcement Learning',
       long_description=readme(),
-      package_dir={'osqp': 'module',
-                   'osqppurepy': 'modulepurepy'},
+      package_dir={'rlqp': 'module',
+                   'rlqppurepy': 'modulepurepy'},
       include_package_data=True,  # Include package data from MANIFEST.in
       setup_requires=["numpy >= 1.7", "qdldl"],
       install_requires=requirements,
       license='Apache 2.0',
-      url="https://osqp.org/",
+      url="https://berkeleyautomation.github.io/rlqp",
       cmdclass={'build_ext': build_ext_osqp},
       packages=packages,
       ext_modules=[_osqp])
