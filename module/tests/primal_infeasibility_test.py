@@ -1,7 +1,7 @@
 # Test osqp python module
-import osqp
-from osqp._osqp import constant
-# import osqppurepy as osqp
+import rlqp as osqp
+from rlqp._osqp import constant
+# import rlqp as osqppurepy as osqp
 from scipy import sparse
 import scipy as sp
 import numpy as np

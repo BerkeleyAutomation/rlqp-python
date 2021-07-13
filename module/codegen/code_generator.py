@@ -1,6 +1,6 @@
-# from osqp import __path__
+# from rlqp import __path__
 from __future__ import print_function
-import osqp
+import rlqp as osqp
 import os.path
 import shutil as sh
 from subprocess import call

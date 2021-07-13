@@ -1,6 +1,6 @@
 # Test osqp python module
-import osqp
-# import osqppurepy as osqp
+import rlqp as osqp
+# import rlqp as osqppurepy as osqp
 import numpy as np
 from scipy import sparse
 import scipy as sp
@@ -9,7 +9,7 @@ import scipy as sp
 import unittest
 import numpy.testing as nptest
 
-from osqp.tests.utils import solve_high_accuracy, rel_tol, abs_tol, decimal_tol
+from rlqp.tests.utils import solve_high_accuracy, rel_tol, abs_tol, decimal_tol
 
 
 class feasibility_tests(unittest.TestCase):

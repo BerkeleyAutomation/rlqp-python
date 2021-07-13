@@ -1,1 +1,1 @@
-from osqp.codegen.code_generator import codegen
+from rlqp.codegen.code_generator import codegen

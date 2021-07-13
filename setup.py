@@ -234,7 +234,7 @@ class build_ext_osqp(build_ext):
         build_ext.build_extensions(self)
 
 
-_osqp = Extension('osqp._osqp',
+_osqp = Extension('rlqp._osqp',
                   define_macros=define_macros,
                   libraries=libraries,
                   library_dirs=library_dirs,
@@ -243,10 +243,10 @@ _osqp = Extension('osqp._osqp',
                   sources=sources_files,
                   extra_compile_args=compile_args)
 
-packages = ['osqp',
-            'osqp.codegen',
-            'osqp.tests',
-            'osqppurepy']
+packages = ['rlqp',
+            'rlqp.codegen',
+            'rlqp.tests',
+            'rqlppurepy']
 
 
 # Read README.rst file
@@ -264,8 +264,8 @@ setup(name='rlqp',
       author_email='jeffi@berkeley.edu',
       description='RQLP: Accelerating Quadratic Optimization with Reinforcement Learning',
       long_description=readme(),
-      package_dir={'osqp': 'module',
-                   'osqppurepy': 'modulepurepy'},
+      package_dir={'rqlp': 'module',
+                   'rqlppurepy': 'modulepurepy'},
       include_package_data=True,  # Include package data from MANIFEST.in
       setup_requires=["numpy >= 1.7", "qdldl"],
       install_requires=requirements,

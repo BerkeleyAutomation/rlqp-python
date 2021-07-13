@@ -1,4 +1,4 @@
-import osqp
+import rlqp as osqp
 import numpy as np
 from scipy import sparse
 
