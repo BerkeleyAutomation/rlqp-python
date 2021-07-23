@@ -80,9 +80,9 @@ define_macros += [('PYTHON', None)]
 # Pass python include dirs to cmake
 cmake_args += ['-DPYTHON_INCLUDE_DIRS=%s' % sysconfig.get_python_inc()]
 
-# import torch
-# print("Using Torch_DIR=%s/Torch" % torch.utils.cmake_prefix_path)
-# cmake_args += ['-DTorch_DIR=%s/Torch' % torch.utils.cmake_prefix_path]
+import torch
+print("Using Torch_DIR=%s/Torch" % torch.utils.cmake_prefix_path)
+cmake_args += ['-DTorch_DIR=%s/Torch' % torch.utils.cmake_prefix_path]
 
 # Define rlqp and qdldl directories
 current_dir = os.getcwd()
