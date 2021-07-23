@@ -1,7 +1,7 @@
-# Test osqp python module
-import rlqp as osqp
-from rlqp._osqp import constant
-# import rlqp as osqppurepy as osqp
+# Test rlqp python module
+import rlqp
+from rlqp._rlqp import constant
+# import rlqppurepy as rlqp
 import numpy as np
 from scipy import sparse
 
@@ -21,7 +21,7 @@ class non_convex_tests(unittest.TestCase):
                                     [-1., 3.], [2., 5.], [3., 4]])
         self.u = np.array([0., 0., -15, 100, 80])
         self.l = -np.inf * np.ones(len(self.u))
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
 
     def test_non_convex_small_sigma(self):
         opts = {'verbose': False, 'sigma': 1e-6}

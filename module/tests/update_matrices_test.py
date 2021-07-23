@@ -1,5 +1,5 @@
-# Test osqp python module
-import rlqp as osqp
+# Test rlqp python module
+import rlqp
 from rlqp.tests.utils import solve_high_accuracy, rel_tol, abs_tol, decimal_tol
 import numpy as np
 import scipy as sp
@@ -37,7 +37,7 @@ class update_matrices_tests(unittest.TestCase):
         self.opts = {'eps_abs': 1e-08,
                      'eps_rel': 1e-08,
                      'verbose': False}
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 

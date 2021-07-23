@@ -1,1 +1,1 @@
-from rlqp.interface import OSQP
+from rlqp.interface import RLQP

@@ -78,7 +78,7 @@ static PyObject * OSQP_solve(OSQP *self) {
     Py_END_ALLOW_THREADS;
 
     if(exitflag){
-        PyErr_SetString(PyExc_ValueError, "OSQP solve error!");
+        PyErr_SetString(PyExc_ValueError, "RLQP solve error!");
         return (PyObject *) NULL;
     }
 
@@ -237,12 +237,15 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
 	OSQPSettings * settings;
 
     PyArrayObject *Px, *Pi, *Pp, *q, *Ax, *Ai, *Ap, *l, *u;
+    PyObject *adaptive_rho_policy_obj = NULL;
+    PyObject *adaptive_rho_policy_bytes = NULL;
     static char *kwlist[] = {"dims",                     // nvars and ncons
                              "Px", "Pi", "Pp", "q",      // Cost function
                              "Ax", "Ai", "Ap", "l", "u", // Constraints
                              "scaling",
                              "adaptive_rho", "adaptive_rho_interval",
                              "adaptive_rho_tolerance", "adaptive_rho_fraction",
+                             "adaptive_rho_policy",
                              "rho", "sigma", "max_iter", "eps_abs", "eps_rel",
                              "eps_prim_inf", "eps_dual_inf", "alpha", "delta",
                              "linsys_solver", "polish",
@@ -254,19 +257,20 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
 #ifdef DLONG
 
 // NB: linsys_solver is enum type which is stored as int (regardless on how c_int is defined).
+// Same with adaptive_rho now.
 
 #ifdef DFLOAT
-    static char * argparse_string = "(LL)O!O!O!O!O!O!O!O!O!|LLLffffLffffffiLLLLLLf";
+    static char * argparse_string = "(LL)O!O!O!O!O!O!O!O!O!|LiLffOffLffffffiLLLLLLf";
 #else
-    static char * argparse_string = "(LL)O!O!O!O!O!O!O!O!O!|LLLddddLddddddiLLLLLLd";
+    static char * argparse_string = "(LL)O!O!O!O!O!O!O!O!O!|LiLddOddLddddddiLLLLLLd";
 #endif
 
 #else
 
 #ifdef DFLOAT
-    static char * argparse_string = "(ii)O!O!O!O!O!O!O!O!O!|iiiffffiffffffiiiiiiif";
+    static char * argparse_string = "(ii)O!O!O!O!O!O!O!O!O!|iiiffOffiffffffiiiiiiif";
 #else
-    static char * argparse_string = "(ii)O!O!O!O!O!O!O!O!O!|iiiddddiddddddiiiiiiid";
+    static char * argparse_string = "(ii)O!O!O!O!O!O!O!O!O!|iiiddOddiddddddiiiiiiid";
 #endif
 
 #endif
@@ -279,7 +283,7 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
 
     // Initialize settings
     settings = (OSQPSettings *)c_malloc(sizeof(OSQPSettings));
-	osqp_set_default_settings(settings);
+    osqp_set_default_settings(settings);
 
     if( !PyArg_ParseTupleAndKeywords(args, kwargs, argparse_string, kwlist,
                                      &n, &m,
@@ -297,6 +301,7 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
                                      &settings->adaptive_rho_interval,
                                      &settings->adaptive_rho_tolerance,
                                      &settings->adaptive_rho_fraction,
+                                     &adaptive_rho_policy_obj,
                                      &settings->rho,
                                      &settings->sigma,
                                      &settings->max_iter,
@@ -317,6 +322,13 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
         return (PyObject *) NULL;
     }
 
+    if (adaptive_rho_policy_obj == Py_None || adaptive_rho_policy_obj == NULL)
+        adaptive_rho_policy_bytes = NULL;
+    else if (!PyUnicode_FSConverter(adaptive_rho_policy_obj, &adaptive_rho_policy_bytes))
+        return NULL;
+    else
+        settings->adaptive_rho_policy = PyBytes_AsString(adaptive_rho_policy_bytes);
+
     // Create Data from parsed vectors
     pydata = create_pydata(n, m, Px, Pi, Pp, q, Ax, Ai, Ap, l, u);
     data = create_data(pydata);
@@ -331,6 +343,8 @@ static PyObject * OSQP_setup(OSQP *self, PyObject *args, PyObject *kwargs) {
     // Cleanup data and settings
     free_data(data, pydata);
     c_free(settings);
+    
+    Py_XDECREF(adaptive_rho_policy_bytes);
 
     if (!exitflag){ // Workspace allocation correct
         // Return workspace
@@ -1334,15 +1348,15 @@ static PyObject *OSQP_update_time_limit(OSQP *self, PyObject *args){
 static PyMethodDef OSQP_methods[] = {
     {"setup", (PyCFunction)OSQP_setup,METH_VARARGS|METH_KEYWORDS, PyDoc_STR("Setup OSQP problem")},
     {"solve", (PyCFunction)OSQP_solve, METH_VARARGS, PyDoc_STR("Solve OSQP problem")},
-    {"version",	(PyCFunction)OSQP_version, METH_NOARGS, PyDoc_STR("OSQP version")},
+    {"version",	(PyCFunction)OSQP_version, METH_NOARGS, PyDoc_STR("RLQP version")},
     {"dimensions", (PyCFunction)OSQP_dimensions, METH_NOARGS, PyDoc_STR("Return problem dimensions (n, m)")},
     {"update_lin_cost",	(PyCFunction)OSQP_update_lin_cost, METH_VARARGS, PyDoc_STR("Update OSQP problem linear cost")},
     {"update_lower_bound", (PyCFunction)OSQP_update_lower_bound, METH_VARARGS, PyDoc_STR("Update OSQP problem lower bound")},
     {"update_upper_bound", (PyCFunction)OSQP_update_upper_bound, METH_VARARGS, PyDoc_STR("Update OSQP problem upper bound")},
     {"update_bounds", (PyCFunction)OSQP_update_bounds, METH_VARARGS, PyDoc_STR("Update OSQP problem bounds")},
-	{"update_P", (PyCFunction)OSQP_update_P, METH_VARARGS, PyDoc_STR("Update OSQP problem quadratic cost matrix")},
-	{"update_P_A", (PyCFunction)OSQP_update_P_A, METH_VARARGS, PyDoc_STR("Update OSQP problem matrices")},
-	{"update_A", (PyCFunction)OSQP_update_A, METH_VARARGS, PyDoc_STR("Update OSQP problem constraint matrix")},
+    {"update_P", (PyCFunction)OSQP_update_P, METH_VARARGS, PyDoc_STR("Update OSQP problem quadratic cost matrix")},
+    {"update_P_A", (PyCFunction)OSQP_update_P_A, METH_VARARGS, PyDoc_STR("Update OSQP problem matrices")},
+    {"update_A", (PyCFunction)OSQP_update_A, METH_VARARGS, PyDoc_STR("Update OSQP problem constraint matrix")},
     {"warm_start", (PyCFunction)OSQP_warm_start, METH_VARARGS, PyDoc_STR("Warm start primal and dual variables")},
     {"warm_start_x", (PyCFunction)OSQP_warm_start_x, METH_VARARGS, PyDoc_STR("Warm start primal variable")},
     {"warm_start_y", (PyCFunction)OSQP_warm_start_y, METH_VARARGS, PyDoc_STR("Warm start dual variable")},
@@ -1365,11 +1379,145 @@ static PyMethodDef OSQP_methods[] = {
     {NULL, NULL}		/* sentinel */
 };
 
+static PyObject * OSQP_get_x(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp n = (npy_intp)self->workspace->data->n;
+    PyObject *x = (PyObject *)PyArrayFromCArray(self->workspace->x, &n);
+    return x;
+}
+
+static PyObject * OSQP_get_y(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *y = (PyObject *)PyArrayFromCArray(self->workspace->y, &m);
+    return y;
+}
+
+static PyObject * OSQP_get_z(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *z = (PyObject *)PyArrayFromCArray(self->workspace->z, &m);
+    return z;
+}
+
+static PyObject * OSQP_get_z_tilde(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    c_int n = self->workspace->data->n;
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *z = (PyObject *)PyArrayFromCArray(self->workspace->xz_tilde + n, &m);
+    return z;
+}
+
+static PyObject * OSQP_get_Ax(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *z = (PyObject *)PyArrayFromCArray(self->workspace->Ax, &m);
+    return z;
+}
+
+static PyObject * OSQP_get_lower_bound(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *l = (PyObject *)PyArrayFromCArray(self->workspace->data->l, &m);
+    return l;
+}
+
+static PyObject * OSQP_get_upper_bound(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *u = (PyObject *)PyArrayFromCArray(self->workspace->data->u, &m);
+    return u;
+}
+
+static PyObject * OSQP_get_rho_vec(OSQP *self, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return NULL;
+    }
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    PyObject *rho_vec = (PyObject *)PyArrayFromCArray(self->workspace->rho_vec, &m);
+    return rho_vec;
+}
+
+static long pyarray_vector_size(PyArrayObject* obj) {
+    int ndim = PyArray_NDIM(obj);
+    if (ndim == 1)
+        return PyArray_DIM(obj, 0);
+    if (ndim != 2)
+        return -1;
+    if (PyArray_DIM(obj, 0) == 1)
+        return PyArray_DIM(obj, 1);
+    if (PyArray_DIM(obj, 1) == 1)
+        return PyArray_DIM(obj, 0);
+    return -1;
+}
+
+static int OSQP_set_rho_vec(OSQP *self, PyObject *value, void* context) {
+    if (!self->workspace) {
+        PyErr_SetString(PyExc_ValueError, "Workspace not initialized!");
+        return -1;
+    }
+
+    if (!PyArray_Check(value)) {
+        PyErr_SetString(PyExc_ValueError, "rho vec must be a numpy array");
+        return -1;
+    }
+
+    npy_intp m = (npy_intp)self->workspace->data->m;
+    int float_type = get_float_type();
+    PyArrayObject *v_cont = get_contiguous((PyArrayObject*)value, float_type);
+    int result;
+    if (pyarray_vector_size(v_cont) != m) {
+        PyErr_SetString(PyExc_ValueError, "rho vec size mismatch");
+        result = -1;
+    } else {
+        c_float *v_arr = (c_float*)PyArray_DATA(v_cont);
+        osqp_update_rho_vec(self->workspace, v_arr);
+        result = 0;
+    }
+    
+    Py_DECREF(v_cont);
+    return result;
+}
+
+static PyGetSetDef RLQP_getset[] = {
+    { "lower_bound", (getter)OSQP_get_lower_bound, NULL, PyDoc_STR("Get the lower bound"), NULL },
+    { "upper_bound", (getter)OSQP_get_upper_bound, NULL, PyDoc_STR("Get the upper bound"), NULL },
+    { "x", (getter)OSQP_get_x, NULL, PyDoc_STR("Get the current value of x"), NULL },
+    { "y", (getter)OSQP_get_y, NULL, PyDoc_STR("Get the current value of y"), NULL },
+    { "z", (getter)OSQP_get_z, NULL, PyDoc_STR("Get the current value of z"), NULL },
+    { "z_tilde", (getter)OSQP_get_z_tilde, NULL, PyDoc_STR("Get the current value of z_tilde"), NULL },
+    { "Ax", (getter)OSQP_get_Ax, NULL, PyDoc_STR("Get the current value of Ax"), NULL },
+    { "rho_vec", (getter)OSQP_get_rho_vec, (setter)OSQP_set_rho_vec, PyDoc_STR("Access to the internal rho vector"), NULL },
+    { NULL } /* sentinel */
+};
+
 
 // Define workspace type object
 static PyTypeObject OSQP_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "osqp.OSQP",                        /*tp_name*/
+    "rlqp.RLQP",                        /*tp_name*/
     sizeof(OSQP),                       /*tp_basicsize*/
     0,                                  /*tp_itemsize*/
     (destructor)OSQP_dealloc,           /*tp_dealloc*/
@@ -1388,7 +1536,7 @@ static PyTypeObject OSQP_Type = {
     0,                                  /*tp_setattro*/
     0,                                  /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,                 /*tp_flags*/
-    "OSQP solver",                      /* tp_doc */
+    "RLQP solver",                      /* tp_doc */
     0,		                            /* tp_traverse */
     0,		                            /* tp_clear */
     0,		                            /* tp_richcompare */
@@ -1397,7 +1545,7 @@ static PyTypeObject OSQP_Type = {
     0,		                            /* tp_iternext */
     OSQP_methods,                       /* tp_methods */
     0,                                  /* tp_members */
-    0,                                  /* tp_getset */
+    RLQP_getset,                        /* tp_getset */
     0,                                  /* tp_base */
     0,                                  /* tp_dict */
     0,                                  /* tp_descr_get */

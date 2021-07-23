@@ -1,1 +1,1 @@
-from osqppurepy.interface import OSQP
+from rlqppurepy.interface import RLQP

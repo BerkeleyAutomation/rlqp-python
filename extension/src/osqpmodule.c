@@ -31,7 +31,7 @@ static PyTypeObject OSQP_Type;
 
  /* Module initialization*/
  static struct PyModuleDef moduledef = {
-     PyModuleDef_HEAD_INIT, "_osqp",       /* m_name */
+     PyModuleDef_HEAD_INIT, "_rlqp",       /* m_name */
      NULL,                                 /* m_doc */
      -1,                                   /* m_size */
      OSQP_module_methods,                  /* m_methods */
@@ -57,7 +57,7 @@ static PyObject * moduleinit(void){
 
     // Add type to the module dictionary and initialize it
     Py_INCREF(&OSQP_Type);
-    if (PyModule_AddObject(m, "OSQP", (PyObject *)&OSQP_Type) < 0) return NULL;
+    if (PyModule_AddObject(m, "RLQP", (PyObject *)&OSQP_Type) < 0) return NULL;
 
     // Initialize Info Type
     OSQP_info_Type.tp_new = PyType_GenericNew;
@@ -72,7 +72,7 @@ static PyObject * moduleinit(void){
 
 
 // Init OSQP Internal module
-PyMODINIT_FUNC PyInit__osqp(void) {
+PyMODINIT_FUNC PyInit__rlqp(void) {
     import_array(); /* for numpy arrays */
     return moduleinit();
 }

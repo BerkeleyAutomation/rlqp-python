@@ -63,7 +63,7 @@ static c_int OSQP_results_dealloc(OSQP_results *self) {
 // Define results type object
 static PyTypeObject OSQP_results_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "osqp.OSQP_results",                    /* tp_name*/
+    "rlqp.RLQP_results",                    /* tp_name*/
     sizeof(OSQP_results),                   /* tp_basicsize*/
     0,                                      /* tp_itemsize*/
     (destructor)OSQP_results_dealloc,       /* tp_dealloc*/
@@ -82,7 +82,7 @@ static PyTypeObject OSQP_results_Type = {
     0,                                      /* tp_setattro*/
     0,                                      /* tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,                     /* tp_flags*/
-    "OSQP solver results",                  /* tp_doc */
+    "RLQP solver results",                  /* tp_doc */
     0,		                                /* tp_traverse */
     0,		                                /* tp_clear */
     0,		                                /* tp_richcompare */

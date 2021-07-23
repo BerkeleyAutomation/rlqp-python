@@ -80,6 +80,16 @@ static PyObject *OSQP_constant(OSQP *self, PyObject *args) {
 		return Py_BuildValue("i", MKL_PARDISO_SOLVER);
 	}
 
+    // Adaptive rho
+    if (!strcmp(constant_name, "ADAPTIVE_RHO_DISABLE"))
+        return Py_BuildValue("i", RLQP_ADAPTIVE_RHO_DISABLE);
+    if (!strcmp(constant_name, "ADAPTIVE_RHO_STANDARD"))
+        return Py_BuildValue("i", RLQP_ADAPTIVE_RHO_STANDARD);
+    if (!strcmp(constant_name, "ADAPTIVE_RHO_SCALAR_POLICY"))
+        return Py_BuildValue("i", RLQP_ADAPTIVE_RHO_SCALAR_POLICY);
+    if (!strcmp(constant_name, "ADAPTIVE_RHO_VECTOR_POLICY"))
+        return Py_BuildValue("i", RLQP_ADAPTIVE_RHO_VECTOR_POLICY);
+
     // If reached here error
     PyErr_SetString(PyExc_ValueError, "Constant not recognized");
     return (PyObject *) NULL;

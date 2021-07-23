@@ -1,2 +1,2 @@
-from rlqp.interface import OSQP
-from rlqp._osqp import constant
+from rlqp.interface import RLQP
+from rlqp._rlqp import constant

@@ -1,6 +1,10 @@
 Python interface for RQLP (Accelerating Quadratic Optimization with RL)
 =========================
 
+[⬆️ Back to main RLQP package](https://berkeleyautomation.github.io/rlqp)
+
+<img src="https://raw.githubusercontent.com/BerkeleyAutomation/rlqp/gh_pages/assets/rlqp-img/conceptual_figure.png?token=AADOZWQXPT5BO5YXHRI7GULA5XWUG">
+
 Python wrapper for `RLQP <https://berkeleyautomation.github.io/rlqp>`__: the Operator
 Splitting QP Solver accelerated with RL.
 

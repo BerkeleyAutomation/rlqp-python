@@ -1,23 +1,23 @@
 """
-OSQP solver pure python implementation
+RLQP solver pure python implementation
 """
 from builtins import object
-import osqppurepy._osqp as _osqp # Internal low level module
+import rlqppurepy._rlqp as _rlqp # Internal low level module
 from warnings import warn
 import numpy as np
 from scipy import sparse
 
 
-class OSQP(object):
+class RLQP(object):
     def __init__(self):
-        self._model = _osqp.OSQP()
+        self._model = _rlqp.RLQP()
 
     def version(self):
         return self._model.version()
 
     def setup(self, P=None, q=None, A=None, l=None, u=None, **settings):
         """
-        Setup OSQP solver problem of the form
+        Setup RLQP solver problem of the form
 
         minimize     1/2 x' * P * x + q' * x
         subject to   l <= A * x <= u
@@ -115,7 +115,7 @@ class OSQP(object):
         if not A.has_sorted_indices:
             A.sort_indices()
 
-        # Convert infinity values to OSQP Infinity
+        # Convert infinity values to RLQP Infinity
         u = np.minimum(u, self._model.constant('OSQP_INFTY'))
         l = np.maximum(l, -self._model.constant('OSQP_INFTY'))
 
@@ -125,7 +125,7 @@ class OSQP(object):
 
     def update(self, q=None, l=None, u=None, P=None, A=None):
         """
-        Update OSQP problem arguments
+        Update RLQP problem arguments
         """
 
         # Get problem dimensions
@@ -179,7 +179,7 @@ class OSQP(object):
 
     def update_settings(self, **kwargs):
         """
-        Update OSQP solver settings
+        Update RLQP solver settings
 
         It is possible to change: 'max_iter', 'eps_abs', 'eps_rel', 'rho, 'alpha',
                                   'delta', 'polish', 'polish_refine_iter',

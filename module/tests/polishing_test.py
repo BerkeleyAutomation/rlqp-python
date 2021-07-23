@@ -1,7 +1,7 @@
-# Test osqp python module
-import rlqp as osqp
+# Test rlqp python module
+import rlqp
 from rlqp.tests.utils import solve_high_accuracy, rel_tol, abs_tol, decimal_tol
-# import rlqp as osqppurepy as osqp
+# import rlqppurepy as rlqp
 import numpy as np
 from scipy import sparse
 import scipy as sp
@@ -38,7 +38,7 @@ class polish_tests(unittest.TestCase):
         self.l = -1e05 * np.ones(len(self.u))
         self.n = self.P.shape[0]
         self.m = self.A.shape[0]
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 
@@ -66,7 +66,7 @@ class polish_tests(unittest.TestCase):
         self.A = sparse.csc_matrix((self.m, self.n))
         self.l = np.array([])
         self.u = np.array([])
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 
@@ -93,7 +93,7 @@ class polish_tests(unittest.TestCase):
         self.A = sparse.csc_matrix(np.random.randn(self.m, self.n))
         self.l = -3 + np.random.randn(self.m)
         self.u = 3 + np.random.randn(self.m)
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 

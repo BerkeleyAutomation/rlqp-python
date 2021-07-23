@@ -221,8 +221,13 @@
  static PyObject *OSQP_get_settings(OSQP *self){
      OSQPSettings *settings = self->workspace->settings;
 
+     PyObject *adaptive_rho_policy_obj = Py_None;
+
+     if (settings->adaptive_rho_policy)
+         adaptive_rho_policy_obj = PyUnicode_DecodeFSDefault(settings->adaptive_rho_policy);
+     
      PyObject *return_dict = Py_BuildValue(
-         "{s:d,s:d,s:i,s:i,s:i,s:d,s:d,s:i,s:d,s:d,s:d, s:d, s:d, s:i, s:i, s:i, s:i, s:d}",
+         "{s:d,s:d,s:i,s:i,s:i,s:d,s:d,s:O,s:i,s:d,s:d,s:d, s:d, s:d, s:i, s:i, s:i, s:i, s:d}",
          "rho", (double)settings->rho,
          "sigma", (double)settings->sigma,
          "scaling", settings->scaling,
@@ -230,6 +235,7 @@
          "adaptive_rho_interval", settings->adaptive_rho_interval,
          "adaptive_rho_tolerance", settings->adaptive_rho_tolerance,
          "adaptive_rho_fraction", settings->adaptive_rho_fraction,
+         "adaptive_rho_policy", adaptive_rho_policy_obj, // Py_BuildValue increments the ref
          "max_iter", settings->max_iter,
          "eps_abs", (double)settings->eps_abs,
          "eps_rel", (double)settings->eps_rel,
@@ -242,6 +248,10 @@
          "check_termination", settings->check_termination,
          "time_limit", (double)settings->time_limit
          );
+
+     if (settings->adaptive_rho_policy)
+         Py_XDECREF(adaptive_rho_policy_obj);
+
      return return_dict;
  }
 
@@ -261,7 +271,7 @@ static PyObject *OSQP_get_workspace(OSQP *self){
     }
 
     if(self->workspace->linsys_solver->type != QDLDL_SOLVER) {
-        PyErr_SetString(PyExc_ValueError, "OSQP setup was not performed using QDLDL! Run setup with linsys_solver set as QDLDL");
+        PyErr_SetString(PyExc_ValueError, "RLQP setup was not performed using QDLDL! Run setup with linsys_solver set as QDLDL");
         return (PyObject *) NULL;
     }
 

@@ -1,6 +1,6 @@
-# Test osqp python module
-import rlqp as osqp
-# import rlqp as osqppurepy as osqp
+# Test rlqp python module
+import rlqp
+# import rlqppurepy as rlqp
 import numpy as np
 from scipy import sparse
 import scipy as sp
@@ -37,11 +37,11 @@ class warm_start_tests(unittest.TestCase):
         self.q = np.random.randn(self.n)
 
         # Setup solver
-        self.model = osqp.OSQP()
+        self.model = rlqp.RLQP()
         self.model.setup(P=self.P, q=self.q, A=self.A, l=self.l, u=self.u,
                          **self.opts)
 
-        # Solve problem with OSQP
+        # Solve problem with RLQP
         res = self.model.solve()
 
         # Store optimal values

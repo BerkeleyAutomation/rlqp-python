@@ -177,7 +177,7 @@ static c_int OSQP_info_dealloc(OSQP_info *self) {
 // Define info type object
 static PyTypeObject OSQP_info_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "osqp.OSQP_info",                   /* tp_name*/
+    "rlqp.RLQP_info",                   /* tp_name*/
     sizeof(OSQP_info),                  /* tp_basicsize*/
     0,                                  /* tp_itemsize*/
     (destructor)OSQP_info_dealloc,      /* tp_dealloc*/
@@ -196,7 +196,7 @@ static PyTypeObject OSQP_info_Type = {
     0,                                  /* tp_setattro*/
     0,                                  /* tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,                 /* tp_flags*/
-    "OSQP solver info",                 /* tp_doc */
+    "RLQP solver info",                 /* tp_doc */
     0,		                            /* tp_traverse */
     0,		                            /* tp_clear */
     0,		                            /* tp_richcompare */
