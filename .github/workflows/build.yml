@@ -62,7 +62,7 @@ jobs:
         CIBW_BUILD: cp3?-*
         CIBW_SKIP: "*-win32 *-manylinux_i686"
         CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
-        CIBW_TEST_REQUIRES: "pytest cvxopt"
+        CIBW_TEST_REQUIRES: "pytest cvxopt torch==1.8.1"
         CIBW_BEFORE_BUILD: "python -m pip install torch==1.8.1 -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html"
         CIBW_TEST_COMMAND: "pytest -s {project}/module/tests -k \"not codegen and not mkl\" "
 
