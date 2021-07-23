@@ -1,4 +1,4 @@
-# from osqp import __path__
+# from rlqp import __path__
 from __future__ import print_function
 import rlqp as osqp
 import os.path

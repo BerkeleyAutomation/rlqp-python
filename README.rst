@@ -1,12 +1,12 @@
-Python interface for OSQP
+Python interface for RQLP (Accelerating Quadratic Optimization with RL)
 =========================
 
-.. image:: https://github.com/oxfordcontrol/qdldl-python/workflows/Build/badge.svg?branch=master
-   :target: https://github.com/oxfordcontrol/osqp-python/actions
+[⬆️ Back to main RLQP package](https://berkeleyautomation.github.io/rlqp)
 
+<img src="https://raw.githubusercontent.com/BerkeleyAutomation/rlqp/gh_pages/assets/rlqp-img/conceptual_figure.png?token=AADOZWQXPT5BO5YXHRI7GULA5XWUG">
 
-Python wrapper for `OSQP <https://osqp.org/>`__: the Operator
-Splitting QP Solver.
+Python wrapper for `RLQP <https://berkeleyautomation.github.io/rlqp>`__: the Operator
+Splitting QP Solver accelerated with RL.
 
 The OSQP (Operator Splitting Quadratic Program) solver is a numerical
 optimization package for solving problems in the form
@@ -31,4 +31,4 @@ The interface is documented `here <https://osqp.org/>`__.
 
 Packaging
 ---------
-This repository performs the tests and builds the pypi wheels. Conda packages are on `conda-forge <https://github.com/conda-forge/osqp-feedstock>`__.
+This repository performs the tests and builds the pypi wheels.

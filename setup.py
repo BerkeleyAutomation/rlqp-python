@@ -267,7 +267,7 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 setup(name='rlqp',
-      version='0.6.2.post0',
+      version='0.6.2.post0.alpha0',
       author='Bartolomeo Stellato, Goran Banjac, Jeff Ichnowski, Paras Jain',
       author_email='bartolomeo.stellato@gmail.com',
       description='RLQP: Reinforcement Learning for QP Solving (based on OSQP)',
@@ -278,7 +278,7 @@ setup(name='rlqp',
       setup_requires=["numpy >= 1.7", "qdldl"],
       install_requires=requirements,
       license='Apache 2.0',
-      url="https://rlqp.org/",
+      url="https://berkeleyautomation.github.io/rlqp",
       cmdclass={'build_ext': build_ext_rlqp},
       packages=packages,
       ext_modules=[_rlqp])
