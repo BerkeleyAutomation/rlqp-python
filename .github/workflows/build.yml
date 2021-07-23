@@ -63,7 +63,7 @@ jobs:
         CIBW_SKIP: "*-win32 *-manylinux_i686"
         CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
         CIBW_TEST_REQUIRES: "pytest cvxopt"
-        CIBW_BEFORE_BUILD: "which python && python -m pip install --user torch==1.8.1+cpu -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html"
+        CIBW_BEFORE_BUILD: "which python && python -m pip install torch==1.8.1+cpu --user -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html"
         CIBW_TEST_COMMAND: "pytest -s {project}/module/tests -k \"not codegen and not mkl\" "
 
     - uses: actions/upload-artifact@v2
