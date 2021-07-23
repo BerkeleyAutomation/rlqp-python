@@ -80,9 +80,16 @@ define_macros += [('PYTHON', None)]
 # Pass python include dirs to cmake
 cmake_args += ['-DPYTHON_INCLUDE_DIRS=%s' % sysconfig.get_python_inc()]
 
-import torch
-print("Using Torch_DIR=%s/Torch" % torch.utils.cmake_prefix_path)
-cmake_args += ['-DTorch_DIR=%s/Torch' % torch.utils.cmake_prefix_path]
+class get_torch_cmake_path(object):
+    """Returns torch's cmake path with lazy import.
+    """
+    def __str__(self):
+        import torch
+        print("Using Torch_DIR=%s/Torch" % torch.utils.cmake_prefix_path)
+        return '-DTorch_DIR=%s/Torch' % torch.utils.cmake_prefix_path
+
+
+cmake_args += [get_torch_cmake_path()]
 
 # Define rlqp and qdldl directories
 current_dir = os.getcwd()
@@ -136,7 +143,14 @@ if system() == 'Windows':
     # We need to include this to fix the dependency
     libraries += ['legacy_stdio_definitions']
 
-library_dirs += [os.path.join(os.path.dirname(os.path.dirname(torch.utils.cmake_prefix_path)), "lib")]
+class get_torch_library_dir(object):
+    """Returns torch's library path with lazy import.
+    """
+    def __str__(self):
+        import torch
+        return os.path.join(os.path.dirname(os.path.dirname(torch.utils.cmake_prefix_path)), "lib")
+
+library_dirs += [get_torch_library_dir()]
 libraries += ["torch", "c10"]
 
 # Add RLQP compiled library
