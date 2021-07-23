@@ -240,7 +240,7 @@ class build_ext_rlqp(build_ext):
             raise RuntimeError("CMake must be installed to build RLQP")
 
         # Compile static library with CMake
-        call(['cmake'] + cmake_args + ['..'])
+        call(['cmake'] + [str(x) for x in cmake_args] + ['..'])
         call(['cmake', '--build', '.', '--target', 'rlqpstatic'] +
              cmake_build_flags)
 
