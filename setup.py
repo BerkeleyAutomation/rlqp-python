@@ -84,6 +84,8 @@ class get_torch_cmake_path(object):
     """Returns torch's cmake path with lazy import.
     """
     def __str__(self):
+        import pip
+        print(list(sorted(["%s==%s" % (i.key, i.version) for i in pip.get_installed_distributions()])))
         import torch
         print("Using Torch_DIR=%s/Torch" % torch.utils.cmake_prefix_path)
         return '-DTorch_DIR=%s/Torch' % torch.utils.cmake_prefix_path
